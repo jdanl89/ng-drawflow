@@ -1,66 +1,47 @@
-import { CommonModule } from '@angular/common';
+import { Component, AfterViewInit } from '@angular/core';
 import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  Input,
-  OnChanges,
-  OnInit,
-  SimpleChanges,
-  ViewChild,
-} from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+  FaIconLibrary,
+  FontAwesomeModule,
+} from '@fortawesome/angular-fontawesome';
+import {
+  faLock,
+  faLockOpen,
+  faSearchMinus,
+  faSearch,
+  faSearchPlus,
+} from '@fortawesome/free-solid-svg-icons';
+import drawingData from './drawing-data.json';
+import nodes from './nodes.json';
 import Drawflow from 'drawflow';
+import { NodeElement } from '../node.model';
 
 @Component({
   selector: 'app-drawflow',
-  imports: [CommonModule, FormsModule],
+  imports: [FontAwesomeModule],
   templateUrl: './drawflow.component.html',
   styleUrl: './drawflow.component.scss',
   standalone: true,
 })
-export class DrawflowComponent implements OnInit, AfterViewInit, OnChanges {
-  @Input()
-  nodes: any[] = [];
-  @Input()
-  drawingData: string = '';
-  @Input()
-  locked: boolean = false;
-  @Input()
-  showLock: boolean = true;
-  @Input()
-  showNodes: boolean = true;
-  @Input()
-  otherDetails: any;
+export class DrawflowComponent implements AfterViewInit {
+  editor: Drawflow | undefined;
+  nodes: NodeElement[] = nodes as NodeElement[];
+  mobile_item_selec: string = '';
+  mobile_last_move: any = {};
+  transform: string = '';
 
-  editor!: any;
-  editDivHtml: HTMLElement | undefined;
-  editButtonShown: boolean = false;
-
-  drawnNodes: any[] = [];
-  selectedNodeId: string = '';
-  selectedNode: any = {};
-
-  lastMousePositionEv: any;
-
-  nodeModal: ElementRef | undefined;
-  @ViewChild('content') set setNodeModal(el: ElementRef) {
-    this.nodeModal = el;
+  constructor(faLib: FaIconLibrary) {
+    faLib.addIcons(faLock, faLockOpen, faSearchMinus, faSearch, faSearchPlus);
   }
 
-  constructor(private modalService: NgbModal) {}
+  ngAfterViewInit(): void {
+    this.initDrawFlow();
+  }
 
-  // Private functions
-  private initDrawFlow(): void {
-    const drawFlowHtmlElement = <HTMLElement>(
-      document.getElementById('drawflow')
-    );
+  initDrawFlow(): void {
+    const drawflowHtmlElement: HTMLElement =
+      document.getElementById('drawflow')!;
 
-    const testEditor = new Drawflow(drawFlowHtmlElement);
-    // testEditor.addConnection();
-
-    this.editor = new Drawflow(drawFlowHtmlElement);
+    this.editor = new Drawflow(drawflowHtmlElement);
 
     this.editor.reroute = true;
     this.editor.curvature = 0.5;
@@ -71,418 +52,210 @@ export class DrawflowComponent implements OnInit, AfterViewInit, OnChanges {
     this.editor.editor_mode = 'edit';
 
     this.editor.start();
+    this.editor.import(drawingData);
 
-    /*
-    if (this.drawingData && Object.keys(JSON.parse(this.drawingData).drawflow.Home.data).length > 0) {
-      console.log('this.drawingData :>> ', this.drawingData);
-      this.editor.import(JSON.parse(this.drawingData));
-    }
-    */
+    this.addEditorEvents();
   }
 
-  private resetAllInputsOutputs() {
-    this.nodes.forEach((node) => {
-      node.inputs = 1;
-      node.outputs = 1;
+  addEditorEvents(): void {
+    this.editor!.on('nodeCreated', function (id) {
+      console.log('Node created ' + id);
+    });
+
+    this.editor!.on('nodeRemoved', function (id) {
+      console.log('Node removed ' + id);
+    });
+
+    this.editor!.on('nodeSelected', function (id) {
+      console.log('Node selected ' + id);
+    });
+
+    this.editor!.on('moduleCreated', function (name) {
+      console.log('Module Created ' + name);
+    });
+
+    this.editor!.on('moduleChanged', function (name) {
+      console.log('Module Changed ' + name);
+    });
+
+    this.editor!.on('connectionCreated', function (connection) {
+      console.log('Connection created');
+      console.log(connection);
+    });
+
+    this.editor!.on('connectionRemoved', function (connection) {
+      console.log('Connection removed');
+      console.log(connection);
+    });
+
+    this.editor!.on('mouseMove', function (position) {
+      console.log('Position mouse x:' + position.x + ' y:' + position.y);
+    });
+
+    this.editor!.on('nodeMoved', function (id) {
+      console.log('Node moved ' + id);
+    });
+
+    this.editor!.on('zoom', function (zoom) {
+      console.log('Zoom level ' + zoom);
+    });
+
+    this.editor!.on('translate', function (position) {
+      console.log('Translate x:' + position.x + ' y:' + position.y);
+    });
+
+    this.editor!.on('addReroute', function (id) {
+      console.log('Reroute added ' + id);
+    });
+
+    this.editor!.on('removeReroute', function (id) {
+      console.log('Reroute removed ' + id);
     });
   }
 
-  private addEditorEvents() {
-    // Events!
-    this.editor.on('nodeCreated', (id: any) => {
-      console.log(
-        'Editor Event :>> Node created ' + id,
-        this.editor.getNodeFromId(id)
-      );
-    });
-
-    this.editor.on('nodeRemoved', (id: any) => {
-      console.log('Editor Event :>> Node removed ' + id);
-    });
-
-    this.editor.on('nodeSelected', (id: any) => {
-      console.log(
-        'Editor Event :>> Node selected ' + id,
-        this.editor.getNodeFromId(id)
-      );
-      this.selectedNode = this.editor.drawflow.drawflow.Home.data[`${id}`];
-      console.log(
-        'Editor Event :>> Node selected :>> this.selectedNode :>> ',
-        this.selectedNode
-      );
-      console.log(
-        'Editor Event :>> Node selected :>> this.selectedNode :>> ',
-        this.selectedNode.data
-      );
-    });
-
-    this.editor.on('click', (e: any) => {
-      console.log('Editor Event :>> Click :>> ', e);
-
-      if (
-        e.target.closest('.drawflow_content_node') != null ||
-        e.target.classList[0] === 'drawflow-node'
-      ) {
-        if (e.target.closest('.drawflow_content_node') != null) {
-          this.selectedNodeId = e.target.closest(
-            '.drawflow_content_node'
-          ).parentElement.id;
-        } else {
-          this.selectedNodeId = e.target.id;
-        }
-        this.selectedNode =
-          this.editor.drawflow.drawflow.Home.data[
-            `${this.selectedNodeId.slice(5)}`
-          ];
-      }
-
-      if (
-        e.target.closest('#editNode') != null ||
-        e.target.classList[0] === 'edit-node-button'
-      ) {
-        // Open modal with Selected Node
-        this.open(this.nodeModal, this.selectedNodeId);
-      }
-
-      if (e.target.closest('#editNode') === null) {
-        this.hideEditButton();
-      }
-    });
-
-    this.editor.on('moduleCreated', (name: any) => {
-      console.log('Editor Event :>> Module Created ' + name);
-    });
-
-    this.editor.on('moduleChanged', (name: any) => {
-      console.log('Editor Event :>> Module Changed ' + name);
-    });
-
-    this.editor.on('connectionCreated', (connection: any) => {
-      console.log('Editor Event :>> Connection created ', connection);
-    });
-
-    this.editor.on('connectionRemoved', (connection: any) => {
-      console.log('Editor Event :>> Connection removed ', connection);
-    });
-
-    this.editor.on('contextmenu', (e: any) => {
-      console.log('Editor Event :>> Context Menu :>> ', e);
-
-      if (
-        e.target.closest('.drawflow_content_node') != null ||
-        e.target.classList[0] === 'drawflow-node'
-      ) {
-        if (e.target.closest('.drawflow_content_node') != null) {
-          this.selectedNodeId = e.target.closest(
-            '.drawflow_content_node'
-          ).parentElement.id;
-        } else {
-          this.selectedNodeId = e.target.id;
-        }
-        this.selectedNode =
-          this.editor.drawflow.drawflow.Home.data[
-            `${this.selectedNodeId.slice(5)}`
-          ];
-
-        this.showEditButton();
-      }
-    });
-
-    this.editor.on('zoom', (zoom: any) => {
-      console.log('Editor Event :>> Zoom level ' + zoom);
-    });
-
-    this.editor.on('addReroute', (id: any) => {
-      console.log('Editor Event :>> Reroute added ' + id);
-    });
-
-    this.editor.on('removeReroute', (id: any) => {
-      console.log('Editor Event :>> Reroute removed ' + id);
-    });
-
-    // this.editor.on('mouseMove', (position: any) => {
-    //   console.log('Editor Event :>> Position mouse x:' + position.x + ' y:' + position.y);
-    // });
-
-    // this.editor.on('nodeMoved', (id: any) => {
-    //   console.log('Editor Event :>> Node moved ' + id);
-    // });
-
-    // this.editor.on('translate', (position: any) => {
-    //   console.log(
-    //     'Editor Event :>> Translate x:' + position.x + ' y:' + position.y
-    //   );
-    // });
-  }
-
-  private initDrawingBoard() {
-    this.initDrawFlow();
-    if (!this.locked) {
-      this.addEditorEvents();
+  onDrag(e: any) {
+    if (e.type === 'touchstart') {
+      this.mobile_item_selec = e.target
+        .closest('.drag-drawflow')
+        .getAttribute('data-node');
+    } else {
+      e.dataTransfer.setData('node', e.target.getAttribute('data-node'));
     }
   }
 
-  private showEditButton() {
-    this.editButtonShown = true;
-    this.editDivHtml = document.createElement('div');
-    this.editDivHtml.id = 'editNode';
-    this.editDivHtml.innerHTML = '<i class="fas fa-pen"></i>';
-    this.editDivHtml.style.display = 'block';
-    this.editDivHtml.style.position = 'absolute';
-    this.editDivHtml.className = 'edit-node-button';
-
-    const selectedNodeHtml = document.getElementById(this.selectedNodeId);
-    selectedNodeHtml!.append(this.editDivHtml);
-  }
-
-  private hideEditButton() {
-    this.editButtonShown = false;
-    this.editDivHtml = document.getElementById('editNode')!;
-    if (this.editDivHtml) {
-      this.editDivHtml.remove();
-    }
-  }
-
-  open(content: any, nodeId: string) {
-    this.hideEditButton();
-
-    const oldNodeIdNumber = parseInt(nodeId.slice(5));
-    this.selectedNode =
-      this.editor.drawflow.drawflow.Home.data[`${oldNodeIdNumber}`];
-    const oldNodeStringified = JSON.stringify(this.selectedNode);
-    // const { inputsCount, outputsCount } = this.countInOutputsOfNode(JSON.parse(oldNodeStringified));
-
-    const modalRef = this.modalService.open(content, {
-      size: 'xl',
-      backdrop: 'static',
-      keyboard: false,
-    });
-
-    modalRef.dismissed.subscribe((reason) => {
-      if (typeof reason == 'object') {
-        const newDrawnNode = reason;
-        newDrawnNode.name = newDrawnNode.data.infos.name;
-        newDrawnNode.html = `<div>${newDrawnNode.name}</div>`;
-
-        if (oldNodeStringified != JSON.stringify(this.selectedNode)) {
-          // Create Node
-          newDrawnNode.id = this.editor.addNode(
-            newDrawnNode.name,
-            1,
-            1,
-            newDrawnNode.pos_x,
-            newDrawnNode.pos_y,
-            newDrawnNode.class,
-            newDrawnNode.data,
-            newDrawnNode.html,
-            newDrawnNode.typenode
-          );
-
-          // Reestablish connections
-          this.reestablishOldConnections(
-            JSON.parse(oldNodeStringified),
-            newDrawnNode.id
-          );
-
-          // Remove Old Node
-          this.editor.removeNodeId(nodeId);
-        }
-      }
-    });
-  }
-
-  onKeyEvent(e: any) {
-    // this.nameAlreadyUsed = this.checkIfNameIsUsed(e.target.value, this.selectedNode.id);
-  }
-
-  private countInOutputsOfNode(node: any) {
-    let inputsCount = 0;
-    let outputsCount = 0;
-
-    Object.keys(node.inputs).forEach((inputKey) => {
-      if (node.inputs[`${inputKey}`].connections.length > 0) {
-        inputsCount++;
-      }
-    });
-
-    Object.keys(node.outputs).forEach((outputKey) => {
-      if (node.outputs[`${outputKey}`].connections.length > 0) {
-        outputsCount++;
-      }
-    });
-
-    return { inputsCount, outputsCount };
-  }
-
-  private checkIfNameIsUsed(name: string, id: number) {
-    for (
-      let i = 0;
-      i < Object.keys(this.editor.drawflow.drawflow.Home.data).length;
-      i++
-    ) {
-      const nodeId = Object.keys(this.editor.drawflow.drawflow.Home.data)[i];
-      if (nodeId != `${id}`) {
-        if (this.editor.drawflow.drawflow.Home.data[`${nodeId}`].name == name) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  private reestablishOldConnections(oldNode: any, newNodeId: number) {
-    Object.keys(oldNode.inputs).forEach((inputKey) => {
-      oldNode.inputs[`${inputKey}`].connections.forEach((connection: any) => {
-        this.editor.addConnection(
-          connection.node,
-          newNodeId,
-          connection.input,
-          inputKey
+  onDrop(e: any) {
+    if (e.type === 'touchend') {
+      var parentdrawflow = document
+        .elementFromPoint(
+          this.mobile_last_move.touches[0].clientX,
+          this.mobile_last_move.touches[0].clientY
+        )!
+        .closest('#drawflow');
+      if (parentdrawflow != null) {
+        this.addNodeToDrawFlow(
+          this.mobile_item_selec,
+          this.mobile_last_move.touches[0].clientX,
+          this.mobile_last_move.touches[0].clientY
         );
-      });
-    });
-
-    Object.keys(oldNode.outputs).forEach((outputKey) => {
-      oldNode.outputs[`${outputKey}`].connections.forEach((connection: any) => {
-        this.editor.addConnection(
-          newNodeId,
-          connection.node,
-          outputKey,
-          connection.output
-        );
-      });
-    });
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    console.log('changes :>> ', changes);
-
-    if (
-      changes['drawingData'] &&
-      changes['drawingData'].currentValue &&
-      changes['drawingData'].currentValue.length > 0 &&
-      Object.keys(
-        JSON.parse(changes['drawingData'].currentValue).drawflow.Home.data
-      ).length > 0
-    ) {
-      this.editor.import(JSON.parse(changes['drawingData'].currentValue));
+      }
+      this.mobile_item_selec = '';
+    } else {
+      e.preventDefault();
+      var data = e.dataTransfer.getData('node');
+      this.addNodeToDrawFlow(data, e.clientX, e.clientY);
     }
   }
 
-  ngOnInit(): void {
-    // this.initDrawingBoard();
-    // this.editor.editor_mode = this.locked != null && this.locked == false ? 'edit' : 'fixed';
-  }
-
-  ngAfterViewInit(): void {
-    this.initDrawingBoard();
-    this.editor.editor_mode =
-      this.locked != null && this.locked == false ? 'edit' : 'fixed';
-  }
-
-  onDrawflowEvent(e: any) {
-    switch (e.type) {
-      case 'dragstart':
-        // console.log('Drawflow Event: DragStart :>> e :>> ', e);
-        this.selectedNode.data = JSON.parse(
-          JSON.stringify(
-            [...this.nodes].find(
-              (node) => node.infos.name === e.target.outerText
-            )
-          )
-        );
-        break;
-      case 'dragenter':
-        // console.log('Drawflow Event: DragEnter :>> e :>> ', e);
-        break;
-      case 'dragover':
-        // console.log('Drawflow Event: DragOver :>> e :>> ', e);
-        e.preventDefault();
-        e.stopPropagation();
-        break;
-      case 'dragleave':
-        // console.log('Drawflow Event: DragLeave :>> e :>> ', e);
-        break;
-      case 'drop':
-        // console.log('Drawflow Event: Drop :>> e :>> ', e);
-        e.preventDefault();
-        this.addNodeToDrawBoard(e.clientX, e.clientY);
-        this.resetAllInputsOutputs();
-        break;
-
-      default:
-        console.log('Other Drawflow Event :>> e :>> ', e);
-        break;
+  addNodeToDrawFlow(name: string, pos_x: number, pos_y: number): boolean {
+    if (this.editor!.editor_mode === 'fixed') {
+      return false;
     }
+    pos_x =
+      pos_x *
+        (this.editor!.precanvas.clientWidth /
+          (this.editor!.precanvas.clientWidth * this.editor!.zoom)) -
+      this.editor!.precanvas.getBoundingClientRect().x *
+        (this.editor!.precanvas.clientWidth /
+          (this.editor!.precanvas.clientWidth * this.editor!.zoom));
+    pos_y =
+      pos_y *
+        (this.editor!.precanvas.clientHeight /
+          (this.editor!.precanvas.clientHeight * this.editor!.zoom)) -
+      this.editor!.precanvas.getBoundingClientRect().y *
+        (this.editor!.precanvas.clientHeight /
+          (this.editor!.precanvas.clientHeight * this.editor!.zoom));
+
+    let node: NodeElement = this.nodes.find(
+      (n) => n.name.trim().toLowerCase() == name.trim().toLowerCase()
+    )!;
+    var html = `<div><div class="title-box"><i class="${node.iconClass}"></i> ${node.displayName}</div>${node.bodyHtml}</div>`;
+    this.editor!.addNode(
+      node.name,
+      node.inputs,
+      node.outputs,
+      pos_x,
+      pos_y,
+      node.name,
+      node.data,
+      html,
+      false
+    );
+
+    return true;
   }
 
-  // Drawflow Editor Operations
-  addNodeToDrawBoard(pos_x: number, pos_y: number) {
-    if (this.editor.editor_mode === 'edit') {
-      pos_x =
-        pos_x *
-          (this.editor.precanvas.clientWidth /
-            (this.editor.precanvas.clientWidth * this.editor.zoom)) -
-        this.editor.precanvas.getBoundingClientRect().x *
-          (this.editor.precanvas.clientWidth /
-            (this.editor.precanvas.clientWidth * this.editor.zoom));
-
-      pos_y =
-        pos_y *
-          (this.editor.precanvas.clientHeight /
-            (this.editor.precanvas.clientHeight * this.editor.zoom)) -
-        this.editor.precanvas.getBoundingClientRect().y *
-          (this.editor.precanvas.clientHeight /
-            (this.editor.precanvas.clientHeight * this.editor.zoom));
-
-      console.log(
-        'addNodeToDrawBoard :>> this.selectedNode :>> ',
-        this.selectedNode
-      );
-
-      const htmlTemplate = `<div>${this.selectedNode.data.infos.name}</div>`;
-
-      this.editor.addNode(
-        this.selectedNode.data.infos.name,
-        1 /*this.selectedNode.data.inputs*/,
-        1 /*this.selectedNode.data.outputs*/,
-        pos_x,
-        pos_y,
-        '',
-        this.selectedNode.data,
-        htmlTemplate,
-        false
-      );
-    }
+  allowDrop(e: any) {
+    e.preventDefault();
   }
 
   onClear() {
-    this.editor.clear();
+    this.editor!.clearModuleSelected();
   }
 
-  changeMode() {
-    this.locked = !this.locked;
-    this.editor.editor_mode =
-      this.locked != null && this.locked == false ? 'edit' : 'fixed';
+  onLock() {
+    this.editor!.editor_mode = 'fixed';
+    this.changeMode('lock');
+  }
+
+  onUnlock() {
+    this.editor!.editor_mode = 'edit';
+    this.changeMode('unlock');
+  }
+
+  changeMode(option: string) {
+    if (option == 'lock') {
+      document.getElementById('lock')!.style.display = 'none';
+      document.getElementById('unlock')!.style.display = 'block';
+    } else {
+      document.getElementById('lock')!.style.display = 'block';
+      document.getElementById('unlock')!.style.display = 'none';
+    }
+  }
+
+  changeModule(e: any) {
+    var all = document.querySelectorAll('.menu ul li');
+    for (var i = 0; i < all.length; i++) {
+      all[i].classList.remove('selected');
+    }
+    e.target.classList.add('selected');
+  }
+
+  showpopup(e: any) {
+    e.target.closest('.drawflow-node').style.zIndex = '9999';
+    e.target.children[0].style.display = 'block';
+    //document.getElementById("modalfix").style.display = "block";
+
+    //e.target.children[0].style.transform = 'translate('+translate.x+'px, '+translate.y+'px)';
+    this.transform = this.editor!.precanvas.style.transform;
+    this.editor!.precanvas.style.transform = '';
+    this.editor!.precanvas.style.left = this.editor!.canvas_x + 'px';
+    this.editor!.precanvas.style.top = this.editor!.canvas_y + 'px';
+    console.log(this.transform);
+
+    //e.target.children[0].style.top  =  -editor.canvas_y - editor.container.offsetTop +'px';
+    //e.target.children[0].style.left  =  -editor.canvas_x  - editor.container.offsetLeft +'px';
+    this.editor!.editor_mode = 'fixed';
+  }
+
+  closemodal(e: any) {
+    e.target.closest('.drawflow-node').style.zIndex = '2';
+    e.target.parentElement.parentElement.style.display = 'none';
+    //document.getElementById("modalfix").style.display = "none";
+    this.editor!.precanvas.style.transform = this.transform;
+    this.editor!.precanvas.style.left = '0px';
+    this.editor!.precanvas.style.top = '0px';
+    this.editor!.editor_mode = 'edit';
   }
 
   onZoomOut() {
-    this.editor.zoom_out();
-  }
-
-  onZoomIn() {
-    this.editor.zoom_in();
+    this.editor!.zoom_out();
   }
 
   onZoomReset() {
-    this.editor.zoom_reset();
+    this.editor!.zoom_reset();
   }
 
-  exportDrawingData() {
-    return this.editor.export();
-  }
-
-  onSubmit() {
-    this.drawingData = this.exportDrawingData();
+  onZoomIn() {
+    this.editor!.zoom_in();
   }
 }

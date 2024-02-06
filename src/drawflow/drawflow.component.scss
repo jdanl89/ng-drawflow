@@ -1,3 +1,5 @@
+@import "../../node_modules/drawflow/dist/drawflow.min.css";
+
 :root {
   --border-color: #cacaca;
   --background-color: #ffffff;
@@ -5,14 +7,13 @@
   --background-box-title: #f7f7f7;
 }
 
-html,
-body {
+html, body {
   margin: 0px;
   padding: 0px;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  font-family: "Roboto", sans-serif;
+  font-family: 'Roboto', sans-serif;
 }
 
 header {
@@ -38,7 +39,7 @@ header a {
   text-decoration: none;
 }
 
-.github-link {
+.github-link{
   position: absolute;
   top: 10px;
   right: 20px;
@@ -80,11 +81,11 @@ header a {
 
 .menu ul li {
   display: inline-block;
-  margin-left: 10px;
-  border-right: 1px solid var(--border-color);
-  padding-right: 10px;
-  line-height: 40px;
-  cursor: pointer;
+margin-left: 10px;
+border-right: 1px solid var(--border-color);
+padding-right: 10px;
+line-height: 40px;
+cursor: pointer;
 }
 
 .menu ul li.selected {
@@ -120,8 +121,8 @@ header a {
   cursor: pointer;
   z-index: 5;
 }
-.swal-wide {
-  width: 80% !important;
+.swal-wide{
+    width:80% !important;
 }
 
 .btn-lock {
@@ -169,8 +170,9 @@ header a {
   top: 40px;
   background: var(--background-color);
   background-size: 25px 25px;
-  background-image: linear-gradient(to right, #f1f1f1 1px, transparent 1px),
-    linear-gradient(to bottom, #f1f1f1 1px, transparent 1px);
+  background-image:
+   linear-gradient(to right, #f1f1f1 1px, transparent 1px),
+   linear-gradient(to bottom, #f1f1f1 1px, transparent 1px);
 }
 
 @media only screen and (max-width: 768px) {
@@ -178,12 +180,14 @@ header a {
     width: 50px;
   }
   .col .drag-drawflow span {
-    display: none;
+    display:none;
   }
   #drawflow {
     width: calc(100vw - 51px);
   }
 }
+
+
 
 /* Editing Drawflow */
 
@@ -196,7 +200,7 @@ header a {
   width: 200px;
 }
 
-.drawflow .drawflow-node.selected {
+.drawflow .drawflow-node.selected  {
   background: white;
   border: 1px solid #4ea9ff;
   -webkit-box-shadow: 0 2px 20px 2px #4ea9ff;
@@ -213,15 +217,13 @@ header a {
   stroke-width: 3px;
 }
 
-.drawflow .drawflow-node .input,
-.drawflow .drawflow-node .output {
+.drawflow .drawflow-node .input, .drawflow .drawflow-node .output {
   height: 15px;
   width: 15px;
   border: 2px solid var(--border-color);
 }
 
-.drawflow .drawflow-node .input:hover,
-.drawflow .drawflow-node .output:hover {
+.drawflow .drawflow-node .input:hover, .drawflow .drawflow-node .output:hover {
   background: #4ea9ff;
 }
 
@@ -265,6 +267,7 @@ header a {
   padding: 10px 20px 20px 20px;
   font-size: 14px;
   color: #555555;
+
 }
 .drawflow-node .box p {
   margin-top: 5px;
@@ -279,9 +282,7 @@ header a {
   border-radius: 4px;
 }
 
-.drawflow-node input,
-.drawflow-node select,
-.drawflow-node textarea {
+.drawflow-node input, .drawflow-node select, .drawflow-node textarea {
   border-radius: 4px;
   border: 1px solid var(--border-color);
   height: 30px;
@@ -294,6 +295,7 @@ header a {
 .drawflow-node textarea {
   height: 100px;
 }
+
 
 .drawflow-node.personalized {
   background: red;
@@ -316,12 +318,13 @@ header a {
   stroke: var(--border-color);
   stroke-width: 2;
   fill: white;
+  
 }
 
-.drawflow .connection .point.selected,
-.drawflow .connection .point:hover {
+.drawflow .connection .point.selected, .drawflow .connection .point:hover {
   fill: #4ea9ff;
 }
+
 
 /* Modal */
 .modal {
@@ -333,8 +336,9 @@ header a {
   width: 100vw;
   height: 100vh;
   overflow: auto;
-  background-color: rgb(0, 0, 0);
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgb(0,0,0);
+  background-color: rgba(0,0,0,0.7);
+
 }
 
 .modal-content {
@@ -352,7 +356,7 @@ header a {
   float: right;
   font-size: 28px;
   font-weight: bold;
-  cursor: pointer;
+  cursor:pointer;
 }
 
 @media only screen and (max-width: 768px) {

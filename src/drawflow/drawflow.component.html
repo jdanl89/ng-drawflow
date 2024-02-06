@@ -14,6 +14,7 @@
   </div>
   <div class="col-right">
     <div id="drawflow" (drop)="onDrop($event)" (dragover)="allowDrop($event)">
+      <div class="btn-export" (click)="onExport()">Export</div>
       <div class="btn-clear" (click)="onClear()">Clear</div>
       <div class="btn-lock">
         <i id="lock" class="fa fa-lock" (click)="onLock()"></i>

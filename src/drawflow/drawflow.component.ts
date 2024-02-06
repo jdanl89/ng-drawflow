@@ -1,23 +1,11 @@
 import { Component, AfterViewInit } from '@angular/core';
-import {
-  FaIconLibrary,
-  FontAwesomeModule,
-} from '@fortawesome/angular-fontawesome';
-import {
-  faLock,
-  faLockOpen,
-  faSearchMinus,
-  faSearch,
-  faSearchPlus,
-} from '@fortawesome/free-solid-svg-icons';
+import { NodeElement } from '../node.model';
+import Drawflow from 'drawflow';
 import drawingData from './drawing-data.json';
 import nodes from './nodes.json';
-import Drawflow from 'drawflow';
-import { NodeElement } from '../node.model';
 
 @Component({
   selector: 'app-drawflow',
-  imports: [FontAwesomeModule],
   templateUrl: './drawflow.component.html',
   styleUrl: './drawflow.component.scss',
   standalone: true,
@@ -28,10 +16,6 @@ export class DrawflowComponent implements AfterViewInit {
   mobile_item_selec: string = '';
   mobile_last_move: any = {};
   transform: string = '';
-
-  constructor(faLib: FaIconLibrary) {
-    faLib.addIcons(faLock, faLockOpen, faSearchMinus, faSearch, faSearchPlus);
-  }
 
   ngAfterViewInit(): void {
     this.initDrawFlow();
@@ -186,6 +170,10 @@ export class DrawflowComponent implements AfterViewInit {
 
   allowDrop(e: any) {
     e.preventDefault();
+  }
+
+  onExport() {
+    console.log("export button clicked");
   }
 
   onClear() {

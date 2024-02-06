@@ -2,6 +2,15 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.1.2.
 
+a lot of custom CSS was added in styles.scss as well as the drawflow.component.scsss. See section "Drawflow styles start here" in styles.scss. This should be cleaned up and use node_modules/drawflow/dist/drawflow.min.css instead of putting it in styles.scss
+
+Dependencies:
+- drawflow
+devDependencies:
+- @types/drawflow
+
+note that this implementation also depends on fontawesome and bootstrap (and subsequently jquery and popper.js), but those can be swapped out for other libs.
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.

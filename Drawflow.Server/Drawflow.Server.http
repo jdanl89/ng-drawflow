@@ -1,0 +1,9 @@
+@Drawflow.Server_HostAddress = http://localhost:5048
+
+GET {{Drawflow.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+GET {{Drawflow.Server_HostAddress}}/nodes/
+Accept: application/json
+
+###

@@ -1,0 +1,10 @@
+{
+"SpaProxyServer": {
+"ServerUrl": "https://localhost:4200",
+"RedirectUrl": "",
+"LaunchCommand": "npm start",
+"WorkingDirectory": "D:\\Users\\Jason\\Source\\Repos\\Drawflow\\Drawflow.Server\\..\\drawflow.client",
+"MaxTimeoutInSeconds": "120",
+"KeepRunning": "false"
+}
+}

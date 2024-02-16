@@ -1,10 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, AfterViewInit, OnInit } from '@angular/core';
+import { Observable, forkJoin } from 'rxjs';
 import { NodeElement } from './models/node';
 import { Drawing } from './models/drawing';
 import Drawflow from 'drawflow';
-import drawingData from './drawing-data.json';
-import { Observable, Subscription, forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-drawflow',
@@ -58,8 +57,6 @@ export class DrawflowComponent implements OnInit, AfterViewInit {
     this.editor.editor_mode = 'edit';
 
     this.editor.start();
-
-    console.log(this.drawing);
     this.editor.import(this.drawing);
 
     this.addEditorEvents();
@@ -176,9 +173,11 @@ export class DrawflowComponent implements OnInit, AfterViewInit {
     let node: NodeElement = this.nodes.find(
       (n) => n.name.trim().toLowerCase() == name.trim().toLowerCase(),
     )!;
+
     var html = `<div><div class="title-box"><i class="${node.iconClass}"></i> ${
       node.displayName
     }</div>${node.bodyHtml ?? ''}</div>`;
+
     this.editor!.addNode(
       node.name,
       node.inputs,

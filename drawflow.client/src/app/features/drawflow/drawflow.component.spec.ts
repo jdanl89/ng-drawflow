@@ -8,10 +8,9 @@ describe('DrawflowComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [DrawflowComponent]
-    })
-    .compileComponents();
-    
+      declarations: [DrawflowComponent],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(DrawflowComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

@@ -1,12 +1,10 @@
 <div class="wrapper">
   <div class="col">
     @for (node of nodes; track node.id) {
-    <div
-      class="drag-drawflow"
-      draggable="true"
-      (dragstart)="onDrag($event)"
-      [attr.data-node]="node.name"
-    >
+    <div class="drag-drawflow"
+         draggable="true"
+         (dragstart)="onDrag($event)"
+         [attr.data-node]="node.name">
       <i class="{{ node.iconClass }}"></i>
       <span class="ms-2">{{ node.displayName }}</span>
     </div>
@@ -18,12 +16,10 @@
       <div class="btn-clear" (click)="onClear()">Clear</div>
       <div class="btn-lock">
         <i id="lock" class="fa fa-lock" (click)="onLock()"></i>
-        <i
-          id="unlock"
-          class="fa fa-unlock-alt"
-          (click)="onUnlock()"
-          style="display: none"
-        ></i>
+        <i id="unlock"
+           class="fa fa-unlock-alt"
+           (click)="onUnlock()"
+           style="display: none"></i>
       </div>
       <div class="bar-zoom">
         <i class="fa fa-search-minus" (click)="onZoomOut()"></i>

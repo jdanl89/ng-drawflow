@@ -1,8 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, AfterViewInit, OnInit } from '@angular/core';
 import { NodeElement } from './models/node';
+import { Drawing } from './models/drawing';
 import Drawflow from 'drawflow';
 import drawingData from './drawing-data.json';
+import { Observable, Subscription, forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-drawflow',
@@ -12,31 +14,34 @@ import drawingData from './drawing-data.json';
 export class DrawflowComponent implements OnInit, AfterViewInit {
   editor: Drawflow | undefined;
   nodes: NodeElement[] = [];
+  drawing: Drawing | undefined;
   mobile_item_selec: string = '';
   mobile_last_move: any = {};
   transform: string = '';
 
   constructor(private http: HttpClient) {}
 
-  ngOnInit(): void {
-    this.getNodes();
-    this.getDrawing();
-  }
+  ngOnInit(): void {}
 
   ngAfterViewInit(): void {
-    this.initDrawFlow();
-  }
-
-  getNodes() {
-    this.http.get<NodeElement[]>('/nodes').subscribe({
-      next: (result) => (this.nodes = result),
+    const nodes = this.getNodes();
+    const drawing = this.getDrawing(0);
+    forkJoin({ nodes: nodes, drawing: drawing }).subscribe({
+      next: (result) => {
+        console.log(result);
+        this.nodes = result.nodes;
+        this.drawing = result.drawing;
+      },
       error: (error) => console.error(error),
+      complete: () => this.initDrawFlow(),
     });
   }
 
-  getDrawing() {
-    // todo: get drawing data from API endpoint
-  }
+  getNodes = (): Observable<NodeElement[]> =>
+    this.http.get<NodeElement[]>('/api/nodes');
+
+  getDrawing = (workflowId: number): Observable<Drawing> =>
+    this.http.get<Drawing>(`/api/workflows/${workflowId}/drawing`);
 
   initDrawFlow(): void {
     const drawflowHtmlElement: HTMLElement =
@@ -53,7 +58,9 @@ export class DrawflowComponent implements OnInit, AfterViewInit {
     this.editor.editor_mode = 'edit';
 
     this.editor.start();
-    this.editor.import(drawingData);
+
+    console.log(this.drawing);
+    this.editor.import(this.drawing);
 
     this.addEditorEvents();
   }
@@ -129,14 +136,14 @@ export class DrawflowComponent implements OnInit, AfterViewInit {
       var parentdrawflow = document
         .elementFromPoint(
           this.mobile_last_move.touches[0].clientX,
-          this.mobile_last_move.touches[0].clientY
+          this.mobile_last_move.touches[0].clientY,
         )!
         .closest('#drawflow');
       if (parentdrawflow != null) {
         this.addNodeToDrawFlow(
           this.mobile_item_selec,
           this.mobile_last_move.touches[0].clientX,
-          this.mobile_last_move.touches[0].clientY
+          this.mobile_last_move.touches[0].clientY,
         );
       }
       this.mobile_item_selec = '';
@@ -167,7 +174,7 @@ export class DrawflowComponent implements OnInit, AfterViewInit {
           (this.editor!.precanvas.clientHeight * this.editor!.zoom));
 
     let node: NodeElement = this.nodes.find(
-      (n) => n.name.trim().toLowerCase() == name.trim().toLowerCase()
+      (n) => n.name.trim().toLowerCase() == name.trim().toLowerCase(),
     )!;
     var html = `<div><div class="title-box"><i class="${node.iconClass}"></i> ${
       node.displayName
@@ -179,9 +186,9 @@ export class DrawflowComponent implements OnInit, AfterViewInit {
       pos_x,
       pos_y,
       node.name,
-      node.data,
+      node.name,
       html,
-      false
+      false,
     );
 
     return true;

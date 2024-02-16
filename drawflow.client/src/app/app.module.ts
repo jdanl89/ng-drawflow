@@ -8,16 +8,9 @@ import { DrawflowComponent } from './features/drawflow/drawflow.component';
 import { PageNotFoundComponent } from './shared/components/page-not-found/page-not-found.component';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    DrawflowComponent,
-    PageNotFoundComponent
-  ],
-  imports: [
-    BrowserModule, HttpClientModule,
-    AppRoutingModule
-  ],
+  declarations: [AppComponent, DrawflowComponent, PageNotFoundComponent],
+  imports: [BrowserModule, HttpClientModule, AppRoutingModule],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

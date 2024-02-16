@@ -9,10 +9,10 @@ export interface DrawflowSection {
 
 export interface DrawflowDataElement {
   id: number;
-  name: string;
-  data: Object;
-  class: string;
-  html: string;
+  name: string | undefined | null;
+  data: object;
+  class: string | undefined | null;
+  html: string | undefined | null;
   typenode: boolean;
   inputs: { [key: string]: DrawflowConnectionsElement };
   outputs: { [key: string]: DrawflowConnectionsElement };
@@ -26,6 +26,6 @@ export interface DrawflowConnectionsElement {
 
 export interface DrawflowConnectionElement {
   node: string;
-  input: string | undefined;
-  output: string | undefined;
+  input: string | undefined | null;
+  output: string | undefined | null;
 }

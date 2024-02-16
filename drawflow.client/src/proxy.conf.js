@@ -1,12 +1,9 @@
 const PROXY_CONFIG = [
   {
-    context: [
-      "/weatherforecast",
-      "/nodes"
-    ],
+    context: ["/api"],
     target: "https://localhost:7268",
-    secure: false
-  }
-]
+    secure: false,
+  },
+];
 
 module.exports = PROXY_CONFIG;

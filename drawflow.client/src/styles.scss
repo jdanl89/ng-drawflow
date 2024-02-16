@@ -2,7 +2,6 @@
 :root {
   --border-color: #cacaca;
   --background-color: #ffffff;
-
   --background-box-title: #f7f7f7;
 }
 
@@ -21,13 +20,16 @@ header {
   border-bottom: 1px solid var(--border-color);
   padding-left: 20px;
 }
+
 header h2 {
   margin: 0px;
   line-height: 66px;
 }
+
 header a {
   color: black;
 }
+
 .them-edit-link {
   position: absolute;
   top: 10px;
@@ -35,6 +37,7 @@ header a {
   color: black;
   font-size: 40px;
 }
+
 .them-edit-link a {
   text-decoration: none;
 }
@@ -66,6 +69,7 @@ header a {
   cursor: move;
   user-select: none;
 }
+
 .menu {
   position: absolute;
   height: 40px;
@@ -73,6 +77,7 @@ header a {
   background: white;
   width: 100%;
 }
+
 .menu ul {
   padding: 0px;
   margin: 0px;
@@ -121,6 +126,7 @@ header a {
   cursor: pointer;
   z-index: 5;
 }
+
 .swal-wide {
   width: 80% !important;
 }
@@ -155,10 +161,12 @@ header a {
   border-right: 1px solid var(--border-color);
   z-index: 5;
 }
+
 .bar-zoom svg {
   cursor: pointer;
   padding-left: 10px;
 }
+
 .bar-zoom svg:nth-child(1) {
   padding-left: 0px;
 }
@@ -170,17 +178,18 @@ header a {
   // top: 40px;
   background: var(--background-color);
   background-size: 25px 25px;
-  background-image: linear-gradient(to right, #f1f1f1 1px, transparent 1px),
-    linear-gradient(to bottom, #f1f1f1 1px, transparent 1px);
+  background-image: linear-gradient(to right, #f1f1f1 1px, transparent 1px), linear-gradient(to bottom, #f1f1f1 1px, transparent 1px);
 }
 
 @media only screen and (max-width: 768px) {
   .col {
     width: 50px;
   }
+
   .col .drag-drawflow span {
     display: none;
   }
+
   #drawflow {
     width: calc(100vw - 51px);
   }
@@ -259,14 +268,17 @@ header a {
   border-radius: 4px 4px 0px 0px;
   padding-left: 10px;
 }
+
 .drawflow .title-box svg {
   position: initial;
 }
+
 .drawflow-node .box {
   padding: 10px 20px 20px 20px;
   font-size: 14px;
   color: #555555;
 }
+
 .drawflow-node .box p {
   margin-top: 5px;
   margin-bottom: 5px;
@@ -302,9 +314,11 @@ header a {
   text-align: center;
   color: white;
 }
+
 .drawflow-node.personalized .input {
   background: yellow;
 }
+
 .drawflow-node.personalized .output {
   background: green;
 }

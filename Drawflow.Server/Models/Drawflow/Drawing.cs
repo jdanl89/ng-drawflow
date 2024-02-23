@@ -1,4 +1,4 @@
-﻿namespace Drawflow.Server.Models;
+﻿namespace Drawflow.Server.Models.Drawflow;
 
 using System.Text.Json.Serialization;
 
@@ -6,6 +6,19 @@ public class Drawing
 {
     [JsonPropertyName("drawflow")]
     public DrawflowSection Drawflow { get; set; } = new();
+
+    public WorkflowVersion ToWorkflowVersion(int workflowId)
+    {
+        // TODO: if workflow version didn't change, then don't create a new one.
+        // TODO: name, description, and formTemplateId should come from a form.
+        WorkflowVersion _workflowVersion = new()
+        {
+            WorkflowId = workflowId,
+            WorkflowSteps = this.Drawflow.Home.Data.Select(x => x.Value.ToWorkflowStep(long.Parse(x.Key))).ToList()
+        };
+
+        return _workflowVersion;
+    }
 
     public class DrawflowSection
     {
@@ -51,6 +64,33 @@ public class Drawing
 
                 [JsonPropertyName("typenode")]
                 public bool TypeNode { get; set; }
+
+                public WorkflowStep ToWorkflowStep(long moduleId)
+                {
+                    WorkflowStep _workflowStep = new()
+                    {
+                        WorkflowStepId = this.Data.TryGetValue("WorkflowStepId", out object? _workflowStepId) ? _workflowStepId as long? ?? 0 : 0,
+                    };
+
+                    // TODO: if workflow step didn't change, then don't create a new version.
+                    _workflowStep.WorkflowStepVersions = new List<WorkflowStepVersion>()
+                    {
+                        new()
+                        {
+                            Name = this.Name,
+                            Description = this.Data.TryGetValue("Description", out object? _description) ? _description.ToString() : string.Empty,
+                            InputMap = this.Data,
+                            ModuleId = moduleId,
+                            WorkflowStepId = _workflowStep.WorkflowStepId,
+                            NextStepId = 0, // TODO: find a way to get from Outputs
+                            PreviousStepId = 0, // TODO: find a way to get from Inputs
+                            DrawflowNodePosX = this.PosX,
+                            DrawflowNodePosY = this.PosY,
+                        }
+                    };
+
+                    return _workflowStep;
+                }
 
                 public class DrawflowConnectionsElement
                 {

@@ -1,8 +1,8 @@
-﻿namespace Drawflow.Server.Models;
+﻿namespace Drawflow.Server.Models.Drawflow;
 
 using System.Text.Json.Serialization;
 
-public class NodeElement
+public class Node
 {
     [JsonPropertyName("bodyHtml")]
     public string? BodyHtml { get; set; }
@@ -23,8 +23,21 @@ public class NodeElement
     public int Inputs { get; set; }
 
     [JsonPropertyName("name")]
-    public string Name { get; set; } = string.Empty;
+    public string? Name { get; set; }
 
     [JsonPropertyName("outputs")]
     public int Outputs { get; set; }
+
+    public Module ToModule() => new()
+    {
+        ModuleId = this.Id,
+        LongName = this.Name,
+        IconClass = this.IconClass,
+        ShortName = this.DisplayName,
+        InputCount = this.Inputs,
+        InputMap = this.Data,
+        OutputCount = this.Outputs,
+        OutputMap = new(StringComparer.OrdinalIgnoreCase),
+        BodyHtml = this.BodyHtml,
+    };
 }

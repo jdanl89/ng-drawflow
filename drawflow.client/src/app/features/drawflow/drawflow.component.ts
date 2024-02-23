@@ -27,7 +27,6 @@ export class DrawflowComponent implements OnInit, AfterViewInit {
     const drawing = this.getDrawing(0);
     forkJoin({ nodes: nodes, drawing: drawing }).subscribe({
       next: (result) => {
-        console.log(result);
         this.nodes = result.nodes;
         this.drawing = result.drawing;
       },
@@ -37,10 +36,12 @@ export class DrawflowComponent implements OnInit, AfterViewInit {
   }
 
   getNodes = (): Observable<NodeElement[]> =>
-    this.http.get<NodeElement[]>('/api/nodes');
+    this.http.get<NodeElement[]>('/api/modules/nodes');
 
-  getDrawing = (workflowId: number): Observable<Drawing> =>
-    this.http.get<Drawing>(`/api/workflows/${workflowId}/drawing`);
+  getDrawing = (workflowVersionId: number): Observable<Drawing> =>
+    this.http.get<Drawing>(
+      `/api/workflows/versions/${workflowVersionId}/drawing`,
+    );
 
   initDrawFlow(): void {
     const drawflowHtmlElement: HTMLElement =
@@ -64,57 +65,57 @@ export class DrawflowComponent implements OnInit, AfterViewInit {
 
   addEditorEvents(): void {
     this.editor!.on('nodeCreated', function (id) {
-      console.log('Node created ' + id);
+      // console.log('Node created ' + id);
     });
 
     this.editor!.on('nodeRemoved', function (id) {
-      console.log('Node removed ' + id);
+      // console.log('Node removed ' + id);
     });
 
     this.editor!.on('nodeSelected', function (id) {
-      console.log('Node selected ' + id);
+      // console.log('Node selected ' + id);
     });
 
     this.editor!.on('moduleCreated', function (name) {
-      console.log('Module Created ' + name);
+      // console.log('Module Created ' + name);
     });
 
     this.editor!.on('moduleChanged', function (name) {
-      console.log('Module Changed ' + name);
+      // console.log('Module Changed ' + name);
     });
 
     this.editor!.on('connectionCreated', function (connection) {
-      console.log('Connection created');
-      console.log(connection);
+      // console.log('Connection created');
+      // console.log(connection);
     });
 
     this.editor!.on('connectionRemoved', function (connection) {
-      console.log('Connection removed');
-      console.log(connection);
+      // console.log('Connection removed');
+      // console.log(connection);
     });
 
     this.editor!.on('mouseMove', function (position) {
-      console.log('Position mouse x:' + position.x + ' y:' + position.y);
+      // console.log('Position mouse x:' + position.x + ' y:' + position.y);
     });
 
     this.editor!.on('nodeMoved', function (id) {
-      console.log('Node moved ' + id);
+      // console.log('Node moved ' + id);
     });
 
     this.editor!.on('zoom', function (zoom) {
-      console.log('Zoom level ' + zoom);
+      // console.log('Zoom level ' + zoom);
     });
 
     this.editor!.on('translate', function (position) {
-      console.log('Translate x:' + position.x + ' y:' + position.y);
+      // console.log('Translate x:' + position.x + ' y:' + position.y);
     });
 
     this.editor!.on('addReroute', function (id) {
-      console.log('Reroute added ' + id);
+      // console.log('Reroute added ' + id);
     });
 
     this.editor!.on('removeReroute', function (id) {
-      console.log('Reroute removed ' + id);
+      // console.log('Reroute removed ' + id);
     });
   }
 
@@ -198,7 +199,17 @@ export class DrawflowComponent implements OnInit, AfterViewInit {
   }
 
   onSaveWorkflow() {
-    console.log('export button clicked');
+    console.log('save button clicked!');
+    this.saveWorkflow().subscribe((drawing) => console.log(drawing));
+  }
+
+  saveWorkflow(): Observable<Drawing> {
+    const workflowId = 0;
+
+    return this.http.post<Drawing>(
+      `/api/workflows/${workflowId}/version`,
+      this.editor!.export(),
+    );
   }
 
   onClear() {
@@ -236,24 +247,19 @@ export class DrawflowComponent implements OnInit, AfterViewInit {
   showpopup(e: any) {
     e.target.closest('.drawflow-node').style.zIndex = '9999';
     e.target.children[0].style.display = 'block';
-    //document.getElementById("modalfix").style.display = "block";
 
-    //e.target.children[0].style.transform = 'translate('+translate.x+'px, '+translate.y+'px)';
     this.transform = this.editor!.precanvas.style.transform;
     this.editor!.precanvas.style.transform = '';
     this.editor!.precanvas.style.left = this.editor!.canvas_x + 'px';
     this.editor!.precanvas.style.top = this.editor!.canvas_y + 'px';
-    console.log(this.transform);
 
-    //e.target.children[0].style.top  =  -editor.canvas_y - editor.container.offsetTop +'px';
-    //e.target.children[0].style.left  =  -editor.canvas_x  - editor.container.offsetLeft +'px';
     this.editor!.editor_mode = 'fixed';
   }
 
   closemodal(e: any) {
     e.target.closest('.drawflow-node').style.zIndex = '2';
     e.target.parentElement.parentElement.style.display = 'none';
-    //document.getElementById("modalfix").style.display = "none";
+
     this.editor!.precanvas.style.transform = this.transform;
     this.editor!.precanvas.style.left = '0px';
     this.editor!.precanvas.style.top = '0px';

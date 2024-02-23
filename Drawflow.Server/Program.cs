@@ -1,6 +1,10 @@
+using Drawflow.Server.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddScoped<IModuleService, ModuleService>();
+builder.Services.AddScoped<IWorkflowService, WorkflowService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

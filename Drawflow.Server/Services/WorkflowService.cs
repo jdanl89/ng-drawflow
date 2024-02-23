@@ -1,13 +1,13 @@
-﻿namespace Drawflow.Server.Controllers;
+﻿namespace Drawflow.Server.Services;
 
 using Drawflow.Server.Models;
-using Microsoft.AspNetCore.Mvc;
+using Drawflow.Server.Models.Drawflow;
 
-[ApiController]
-[Route("api/[controller]")]
-public class WorkflowController : ControllerBase
+public class WorkflowService : IWorkflowService
 {
-    private static readonly Drawing _drawing = new()
+#pragma warning disable IDE1006
+
+    private static readonly Drawing Drawing = new()
     {
         Drawflow = new()
         {
@@ -400,10 +400,9 @@ public class WorkflowController : ControllerBase
         }
     };
 
-    [HttpGet]
-    [Route("/api/workflows/{workflowId}/drawing")]
-    public Drawing GetDrawing(long workflowId)
-    {
-        return _drawing;
-    }
+#pragma warning restore IDE1006
+
+    public WorkflowVersion CreateWorkflowVersionFromDrawing(int workflowId, Drawing drawing) => drawing.ToWorkflowVersion(workflowId);
+
+    public Drawing GetWorkflowVersionDrawing(long workflowVersionId) => Drawing;
 }

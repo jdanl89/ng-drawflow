@@ -1,34 +1,46 @@
+using Drawflow.Server.Data;
 using Drawflow.Server.Services;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder _builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddScoped<IModuleService, ModuleService>();
-builder.Services.AddScoped<IWorkflowService, WorkflowService>();
+_builder.Services.AddScoped<IFileService, FileService>();
+_builder.Services.AddScoped<IFormService, FormService>();
+_builder.Services.AddScoped<IModuleService, ModuleService>();
+_builder.Services.AddScoped<IWorkflowService, WorkflowService>();
 
-builder.Services.AddControllers();
+// TODO: Add repositories
+_builder.Services.AddDbContext<AppDbContext>();
+
+_builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+_builder.Services.AddEndpointsApiExplorer();
+_builder.Services.AddSwaggerGen();
 
-var app = builder.Build();
+WebApplication _app = _builder.Build();
 
-app.UseDefaultFiles();
-app.UseStaticFiles();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+using (IServiceScope _scope = _app.Services.CreateScope())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    AppDbContext _dbContext = _scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    _dbContext.SeedData();
 }
 
-app.UseHttpsRedirection();
+_app.UseDefaultFiles();
+_app.UseStaticFiles();
 
-app.UseAuthorization();
+// Configure the HTTP request pipeline.
+if (_app.Environment.IsDevelopment())
+{
+    _app.UseSwagger();
+    _app.UseSwaggerUI();
+}
 
-app.MapControllers();
+_app.UseHttpsRedirection();
 
-app.MapFallbackToFile("/index.html");
+_app.UseAuthorization();
 
-app.Run();
+_app.MapControllers();
+
+_app.MapFallbackToFile("/index.html");
+
+_app.Run();

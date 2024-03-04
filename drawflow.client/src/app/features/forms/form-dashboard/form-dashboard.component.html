@@ -1,0 +1,36 @@
+<h2>Form Management</h2>
+<div class="row my-4">
+  <div class="col">
+    <a routerLink="/forms/create" class="btn btn-primary">Add Form</a>
+  </div>
+</div>
+<div class="row my-4">
+  <div class="col">
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">Name</th>
+          <th scope="col">Description</th>
+          <th scope="col">Status</th>
+          <th scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let form of forms">
+          <td>{{ form.id }}</td>
+          <td>{{ form.name }}</td>
+          <td>{{ form.description }}</td>
+          <td>
+            <span *ngIf="form.status == 0">Active</span>
+            <span *ngIf="form.status == 1">Disabled</span>
+            <span *ngIf="form.status == 2">Deleted</span>
+          </td>
+          <td>
+            <a [routerLink]="['/forms', form.id]">More Details</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

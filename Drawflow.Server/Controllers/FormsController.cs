@@ -13,32 +13,12 @@ public class FormsController(IFormService formService) : ControllerBase
     {
         return formService.AddFormAsync(form);
     }
+
     [HttpPost]
     [Route("/api/forms/{formId}/template")]
     public Task<FormTemplate> AddFormTemplate(long formId, FormTemplateCreateModel formTemplate)
     {
         return formService.AddFormTemplateAsync(formId, formTemplate);
-    }
-
-    [HttpGet]
-    [Route("/api/forms")]
-    public Task<List<Form>> GetForms(CancellationToken token = default)
-    {
-        return formService.GetFormsAsync(token);
-    }
-
-    [HttpGet]
-    [Route("/api/forms/{formId}")]
-    public Task<Form?> GetForm(long formId, CancellationToken token = default)
-    {
-        return formService.GetFormByIdAsync(formId, token);
-    }
-
-    [HttpPut]
-    [Route("/api/forms/{formId}")]
-    public Task<Form> UpdateForm(long formId, FormUpdateModel form)
-    {
-        return formService.UpdateFormAsync(formId, form);
     }
 
     [HttpDelete]
@@ -50,9 +30,29 @@ public class FormsController(IFormService formService) : ControllerBase
 
     [HttpDelete]
     [Route("/api/forms/templates/{formTemplateId}")]
-
     public Task DeleteFormTemplate(long formTemplateId)
     {
         return formService.DeleteFormTemplateAsync(formTemplateId);
+    }
+
+    [HttpGet]
+    [Route("/api/forms/{formId}")]
+    public Task<Form?> GetForm(long formId, CancellationToken token = default)
+    {
+        return formService.GetFormByIdAsync(formId, token);
+    }
+
+    [HttpGet]
+    [Route("/api/forms")]
+    public Task<List<Form>> GetForms(CancellationToken token = default)
+    {
+        return formService.GetFormsAsync(token);
+    }
+
+    [HttpPut]
+    [Route("/api/forms/{formId}")]
+    public Task<Form> UpdateForm(long formId, [FromBody] FormUpdateModel form)
+    {
+        return formService.UpdateFormAsync(formId, form);
     }
 }

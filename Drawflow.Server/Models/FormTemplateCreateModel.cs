@@ -1,19 +1,24 @@
 ﻿namespace Drawflow.Server.Models;
 
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 public class FormTemplateCreateModel
 {
-    [Required]
-    [MaxLength(100)]
-    public string? Name { get; set; }
-
     [MaxLength(500)]
+    [JsonPropertyName("description")]
     public string? Description { get; set; }
 
     [Required]
-    public IFormFile TemplateFile { get; set; }
+    [JsonPropertyName("formId")]
+    public long FormId { get; set; }
 
     [Required]
-    public long FormId { get; set; }
+    [MaxLength(100)]
+    [JsonPropertyName("name")]
+    public string? Name { get; set; }
+
+    [Required]
+    [JsonPropertyName("templateFile")]
+    public IFormFile TemplateFile { get; set; }
 }

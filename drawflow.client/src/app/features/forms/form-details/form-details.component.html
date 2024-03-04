@@ -1,0 +1,174 @@
+<div *ngIf="form != null">
+  <div id="form-details">
+    <form [formGroup]="formGroup" (ngSubmit)="submitChanges()">
+      <fieldset [disabled]="!editMode">
+        <div class="mb-3">
+          <label for="name">Name</label>
+          <input type="text" class="form-control" formControlName="name" />
+          <div
+            class="text-danger"
+            *ngIf="
+              formGroup?.get('name')?.invalid && formGroup?.get('name')?.touched
+            "
+          >
+            <div *ngIf="formGroup?.get('name')?.errors?.['required']">
+              Name is required
+            </div>
+            <div *ngIf="formGroup?.get('name')?.errors?.['maxlength']">
+              Name cannot be longer than 50 characters
+            </div>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="description">Description</label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="description"
+          />
+          <div
+            class="text-danger"
+            *ngIf="
+              formGroup?.get('description')?.invalid &&
+              formGroup?.get('description')?.touched
+            "
+          >
+            <div *ngIf="formGroup?.get('name')?.errors?.['required']">
+              Description is required
+            </div>
+            <div *ngIf="formGroup?.get('name')?.errors?.['maxlength']">
+              Description cannot be longer than 50 characters
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <button
+        type="button"
+        class="btn btn-primary"
+        *ngIf="!editMode"
+        (click)="editMode = true"
+      >
+        Edit
+      </button>
+
+      <button
+        type="submit"
+        class="btn btn-primary"
+        *ngIf="editMode"
+        [disabled]="!(formGroup.dirty && formGroup.valid)"
+      >
+        Submit
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-danger ms-4"
+        *ngIf="editMode"
+        (click)="resetForm()"
+      >
+        Cancel
+      </button>
+    </form>
+  </div>
+
+  <div id="form-templates">
+    <table class="table" *ngIf="form.formTemplates.length">
+      <thead>
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">Name</th>
+          <th scope="col">Description</th>
+          <th scope="col">File Location</th>
+          <th scope="col">Status</th>
+          <th scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let formTemplate of form.formTemplates">
+          <td>{{ formTemplate.id }}</td>
+          <td>{{ formTemplate.name }}</td>
+          <td>{{ formTemplate.description }}</td>
+          <td>{{ formTemplate.fileLocation }}</td>
+          <td>
+            <span *ngIf="formTemplate.status == 0">Active</span>
+            <span *ngIf="formTemplate.status == 1">Disabled</span>
+            <span *ngIf="formTemplate.status == 2">Deleted</span>
+          </td>
+          <td>
+            <a [routerLink]="['/forms/templates', formTemplate.id]"
+              >More Details</a
+            >
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div id="audit-info">
+    <div class="row my-3">
+      <div class="col">
+        <div class="form-label">Created At</div>
+        <div class="form-control" [style]="{ '--bs-border-opacity': '0.5' }">
+          {{ form.createdAt }}
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-label">Created By</div>
+        <div class="form-control" [style]="{ '--bs-border-opacity': '0.5' }">
+          {{ form.createdBy }}
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-label">Created On</div>
+        <div class="form-control" [style]="{ '--bs-border-opacity': '0.5' }">
+          <span *ngIf="form != null">{{
+            form.createdOn | date: "MM/dd/yyyy h:mm:ss a"
+          }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="row my-3" *ngIf="form.lastModOn != null">
+      <div class="col">
+        <div class="form-label">Last Modified At</div>
+        <div class="form-control" [style]="{ '--bs-border-opacity': '0.5' }">
+          {{ form.lastModAt }}
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-label">Last Modified By</div>
+        <div class="form-control" [style]="{ '--bs-border-opacity': '0.5' }">
+          {{ form.lastModBy }}
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-label">Last Modified On</div>
+        <div class="form-control" [style]="{ '--bs-border-opacity': '0.5' }">
+          {{ form.lastModOn | date: "MM/dd/yyyy h:mm:ss a" }}
+        </div>
+      </div>
+    </div>
+
+    <div class="row my-3" *ngIf="form.deletedOn != null">
+      <div class="col">
+        <div class="form-label">Deleted At</div>
+        <div class="form-control" [style]="{ '--bs-border-opacity': '0.5' }">
+          {{ form.deletedAt }}
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-label">Deleted By</div>
+        <div class="form-control" [style]="{ '--bs-border-opacity': '0.5' }">
+          {{ form.deletedBy }}
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-label">Deleted On</div>
+        <div class="form-control" [style]="{ '--bs-border-opacity': '0.5' }">
+          {{ form.deletedOn | date: "MM/dd/yyyy h:mm:ss a" }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

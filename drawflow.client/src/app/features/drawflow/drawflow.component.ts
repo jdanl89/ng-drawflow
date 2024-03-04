@@ -1,5 +1,10 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, AfterViewInit, OnInit } from '@angular/core';
+import {
+  Component,
+  AfterViewInit,
+  OnInit,
+  ViewEncapsulation,
+} from '@angular/core';
 import { Observable, forkJoin } from 'rxjs';
 import { NodeElement } from './models/node';
 import { Drawing } from './models/drawing';
@@ -8,7 +13,11 @@ import Drawflow from 'drawflow';
 @Component({
   selector: 'app-drawflow',
   templateUrl: './drawflow.component.html',
-  styleUrl: './drawflow.component.scss',
+  styleUrls: [
+    '../../../../node_modules/drawflow/dist/drawflow.min.css',
+    './drawflow.component.scss',
+  ],
+  encapsulation: ViewEncapsulation.None,
 })
 export class DrawflowComponent implements OnInit, AfterViewInit {
   editor: Drawflow | undefined;

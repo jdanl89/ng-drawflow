@@ -3,7 +3,12 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Form } from '../models/form';
 import { ActivatedRoute } from '@angular/router';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 
 @Component({
   selector: 'app-form-details',
@@ -15,18 +20,17 @@ export class FormDetailsComponent implements OnInit {
   formId!: number;
   form!: Form;
   formGroup: FormGroup = this.formBuilder.group({
-    name: [
-      '',
-      [Validators.required, Validators.maxLength(50), Validators.nullValidator],
-    ],
-    description: [
-      '',
-      [
-        Validators.required,
-        Validators.maxLength(200),
-        Validators.nullValidator,
-      ],
-    ],
+    name: ['', [Validators.required, Validators.maxLength(50)]],
+    description: ['', [Validators.required, Validators.maxLength(200)]],
+  });
+
+  addTemplateMode: boolean = false;
+  templateFileName!: string;
+  templateData: FormData = new FormData();
+  templateGroup: FormGroup = this.formBuilder.group({
+    name: ['', [Validators.required, Validators.maxLength(50)]],
+    description: ['', [Validators.required, Validators.maxLength(200)]],
+    templateFile: [null, Validators.required],
   });
 
   constructor(
@@ -63,9 +67,8 @@ export class FormDetailsComponent implements OnInit {
     this.formGroup.markAsPristine();
   }
 
-  submitChanges(): void {
+  submitForm(): void {
     if (this.formGroup.valid) {
-      console.log('Form data:', this.formGroup.value);
       this.http
         .put<Form>(`/api/forms/${this.formId}`, this.formGroup.value)
         .subscribe({
@@ -77,6 +80,52 @@ export class FormDetailsComponent implements OnInit {
             });
             this.formGroup.markAsPristine();
             this.editMode = false;
+          },
+          error: (error) => console.error(error),
+          complete: () => {},
+        });
+    }
+  }
+
+  onTemplateFileSelected(event: any): void {
+    if (event.target.files?.length != 1) {
+      return;
+    }
+
+    const file: File = event.target.files[0];
+    this.templateFileName = file.name;
+    this.templateGroup.setControl('templateFile', new FormControl(file));
+  }
+
+  resetTemplate(): void {
+    this.addTemplateMode = false;
+    this.formGroup.reset();
+  }
+
+  submitTemplate(): void {
+    if (this.templateGroup.valid) {
+      let formValues = this.templateGroup.value;
+      let formData = new FormData();
+
+      for (let key in formValues) {
+        formData.append(key, formValues[key]);
+      }
+
+      console.log('Template data:', formData);
+      this.http
+        .post<Form>(`/api/forms/${this.formId}/template`, formData)
+        .subscribe({
+          next: (result) => {
+            this.form = result;
+            this.formGroup.setValue({
+              name: this.form.name,
+              description: this.form.description,
+            });
+            this.formGroup.markAsPristine();
+            this.editMode = false;
+
+            this.templateGroup.reset();
+            this.addTemplateMode = false;
           },
           error: (error) => console.error(error),
           complete: () => {},

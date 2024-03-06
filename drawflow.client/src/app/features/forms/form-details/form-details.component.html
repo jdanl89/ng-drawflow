@@ -1,6 +1,6 @@
 <div *ngIf="form != null">
-  <div id="form-details">
-    <form [formGroup]="formGroup" (ngSubmit)="submitChanges()">
+  <div id="form-details" class="my-3">
+    <form [formGroup]="formGroup" (ngSubmit)="submitForm()">
       <fieldset [disabled]="!editMode">
         <div class="mb-3">
           <label for="name">Name</label>
@@ -33,11 +33,11 @@
               formGroup?.get('description')?.touched
             "
           >
-            <div *ngIf="formGroup?.get('name')?.errors?.['required']">
+            <div *ngIf="formGroup?.get('description')?.errors?.['required']">
               Description is required
             </div>
-            <div *ngIf="formGroup?.get('name')?.errors?.['maxlength']">
-              Description cannot be longer than 50 characters
+            <div *ngIf="formGroup?.get('description')?.errors?.['maxlength']">
+              Description cannot be longer than 200 characters
             </div>
           </div>
         </div>
@@ -72,7 +72,9 @@
     </form>
   </div>
 
-  <div id="form-templates">
+  <hr />
+
+  <div id="form-templates" class="my-3">
     <table class="table" *ngIf="form.formTemplates.length">
       <thead>
         <tr>
@@ -103,9 +105,107 @@
         </tr>
       </tbody>
     </table>
+    <button
+      class="btn btn-outline-primary"
+      *ngIf="!addTemplateMode"
+      (click)="addTemplateMode = true"
+    >
+      Add Template
+    </button>
+    <div *ngIf="addTemplateMode">
+      <form [formGroup]="templateGroup" (ngSubmit)="submitTemplate()">
+        <div class="mb-3">
+          <label for="name">Name</label>
+          <input type="text" class="form-control" formControlName="name" />
+          <div
+            class="text-danger"
+            *ngIf="
+              templateGroup?.get('name')?.invalid &&
+              templateGroup?.get('name')?.touched
+            "
+          >
+            <div *ngIf="templateGroup?.get('name')?.errors?.['required']">
+              Name is required
+            </div>
+            <div *ngIf="templateGroup?.get('name')?.errors?.['maxlength']">
+              Name cannot be longer than 50 characters
+            </div>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="description">Description</label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="description"
+          />
+          <div
+            class="text-danger"
+            *ngIf="
+              templateGroup?.get('description')?.invalid &&
+              templateGroup?.get('description')?.touched
+            "
+          >
+            <div
+              *ngIf="templateGroup?.get('description')?.errors?.['required']"
+            >
+              Description is required
+            </div>
+            <div
+              *ngIf="templateGroup?.get('description')?.errors?.['maxlength']"
+            >
+              Description cannot be longer than 200 characters
+            </div>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="templateFile" class="visually-hidden"
+            >Template HTML file</label
+          >
+          <input
+            type="file"
+            accept="application/msword, application/pdf, text/html, text/plain"
+            class="d-none"
+            (change)="onTemplateFileSelected($event)"
+            #templateFile
+          />
+          <div class="input-group" (click)="templateFile.click()">
+            <button class="form-control text-start">
+              {{
+                templateFileName ||
+                  "Select a file (word document, pdf document, html file, or plain text file)."
+              }}
+            </button>
+            <button class="btn btn-outline-primary">Add file</button>
+          </div>
+          <div
+            class="text-danger"
+            *ngIf="
+              templateGroup?.get('templateFile')?.invalid &&
+              templateGroup?.get('templateFile')?.touched
+            "
+          >
+            <div
+              *ngIf="templateGroup?.get('templateFile')?.errors?.['required']"
+            >
+              Template HTML file is required
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" *ngIf="addTemplateMode">
+          Submit
+        </button>
+        <button class="btn btn-outline-danger ms-4" (click)="resetTemplate()">
+          Cancel
+        </button>
+      </form>
+    </div>
   </div>
 
-  <div id="audit-info">
+  <hr />
+
+  <div id="audit-info" class="my-3">
     <div class="row my-3">
       <div class="col">
         <div class="form-label">Created At</div>

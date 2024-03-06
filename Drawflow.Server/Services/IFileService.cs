@@ -2,5 +2,5 @@
 
 public interface IFileService
 {
-    Task<string> SaveFileAsync(IFormFile formFile);
+    Task<string> SaveFileAsync(string fileName, IFormFile formFile);
 }

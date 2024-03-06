@@ -9,50 +9,51 @@ public class FormsController(IFormService formService) : ControllerBase
 {
     [HttpPost]
     [Route("/api/form")]
-    public Task<Form> AddForm(FormCreateModel form)
+    public async Task<Form> AddForm([FromBody] FormCreateModel form)
     {
-        return formService.AddFormAsync(form);
+        return await formService.AddFormAsync(form);
     }
 
-    [HttpPost]
+    [HttpPost, DisableRequestSizeLimit]
     [Route("/api/forms/{formId}/template")]
-    public Task<FormTemplate> AddFormTemplate(long formId, FormTemplateCreateModel formTemplate)
+    public async Task<Form> AddFormTemplate(long formId, [FromForm] FormTemplateCreateModel model)
     {
-        return formService.AddFormTemplateAsync(formId, formTemplate);
+        // save the file to the Uploads folder and add the template to the db.
+        return await formService.AddFormTemplateAsync(formId, model);
     }
 
     [HttpDelete]
     [Route("/api/forms/{formId}")]
-    public Task DeleteForm(long formId)
+    public async Task DeleteForm(long formId)
     {
-        return formService.DeleteFormAsync(formId);
+        await formService.DeleteFormAsync(formId);
     }
 
     [HttpDelete]
     [Route("/api/forms/templates/{formTemplateId}")]
-    public Task DeleteFormTemplate(long formTemplateId)
+    public async Task DeleteFormTemplate(long formTemplateId)
     {
-        return formService.DeleteFormTemplateAsync(formTemplateId);
+        await formService.DeleteFormTemplateAsync(formTemplateId);
     }
 
     [HttpGet]
     [Route("/api/forms/{formId}")]
-    public Task<Form?> GetForm(long formId, CancellationToken token = default)
+    public async Task<Form?> GetForm(long formId, CancellationToken token = default)
     {
-        return formService.GetFormByIdAsync(formId, token);
+        return await formService.GetFormByIdAsync(formId, token);
     }
 
     [HttpGet]
     [Route("/api/forms")]
-    public Task<List<Form>> GetForms(CancellationToken token = default)
+    public async Task<List<Form>> GetForms(CancellationToken token = default)
     {
-        return formService.GetFormsAsync(token);
+        return await formService.GetFormsAsync(token);
     }
 
     [HttpPut]
     [Route("/api/forms/{formId}")]
-    public Task<Form> UpdateForm(long formId, [FromBody] FormUpdateModel form)
+    public async Task<Form> UpdateForm(long formId, [FromBody] FormUpdateModel form)
     {
-        return formService.UpdateFormAsync(formId, form);
+        return await formService.UpdateFormAsync(formId, form);
     }
 }

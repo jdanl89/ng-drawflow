@@ -10,10 +10,6 @@ public class FormTemplateCreateModel
     public string? Description { get; set; }
 
     [Required]
-    [JsonPropertyName("formId")]
-    public long FormId { get; set; }
-
-    [Required]
     [MaxLength(100)]
     [JsonPropertyName("name")]
     public string? Name { get; set; }

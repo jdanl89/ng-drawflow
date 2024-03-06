@@ -364,5 +364,6 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # Custom app settings
-/ReactChat.Api/appsettings.Development.json
-Drawflow.Server/appsettings.Development.json
+appsettings.*.json
+Drawflow.Server/logs/
+Drawflow.Server/Uploads/

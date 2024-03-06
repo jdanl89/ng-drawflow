@@ -17,18 +17,24 @@ public class FormService(AppDbContext dbContext, IFileService fileService) : IFo
         return _entry.Entity;
     }
 
-    public async Task<FormTemplate> AddFormTemplateAsync(long formId, FormTemplateCreateModel model, [CallerMemberName] string createdAt = "")
+    public async Task<Form> AddFormTemplateAsync(long formId, FormTemplateCreateModel model, [CallerMemberName] string createdAt = "")
     {
-        string _fileLocation = await fileService.SaveFileAsync(model.TemplateFile);
+        string _fileName = model.Name + Path.GetExtension(model.TemplateFile.FileName);
+        string _fileLocation = await fileService.SaveFileAsync(_fileName, model.TemplateFile);
         FormTemplate _formTemplate = FormTemplate.Create(model, _fileLocation, formId);
-        EntityEntry<FormTemplate> _entry = dbContext.FormTemplates.Add(_formTemplate);
+        _formTemplate.CreatedAt = createdAt;
+
+        dbContext.FormTemplates.Add(_formTemplate);
+
         await dbContext.SaveChangesAsync();
-        return _entry.Entity;
+
+        Form _form = await dbContext.Forms.Include(f => f.FormTemplates).OrderBy(ft => ft.Id).FirstAsync(f => f.Id == formId);
+        return _form;
     }
 
-    public Task<List<Form>> GetFormsAsync(CancellationToken token = default) => dbContext.Forms.ToListAsync(token);
+    public Task<List<Form>> GetFormsAsync(CancellationToken token = default) => dbContext.Forms.OrderBy(f => f.Id).ToListAsync(token);
 
-    public Task<Form?> GetFormByIdAsync(long formId, CancellationToken token = default) => dbContext.Forms.FirstOrDefaultAsync(f => f.Id == formId, token);
+    public Task<Form?> GetFormByIdAsync(long formId, CancellationToken token = default) => dbContext.Forms.Include(f => f.FormTemplates).OrderBy(ft => ft.Id).FirstOrDefaultAsync(f => f.Id == formId, token);
 
     public async Task<Form> UpdateFormAsync(long formId, FormUpdateModel model, [CallerMemberName] string modifiedAt = "")
     {

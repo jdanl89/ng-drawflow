@@ -1,6 +1,21 @@
 <div *ngIf="formTemplate != null">
   <div class="row my-3">
-    <div class="col-6">
+    <div class="col-12 col-lg-6 order-1 order-lg-0">
+      Document Preview:
+      <div *ngIf="iframeSrc != ''" class="ratio ratio-1x1">
+        <iframe [src]="iframeSrc" allowfullscreen
+          >Preview PDF or plain text document</iframe
+        >
+      </div>
+      <div class="row" *ngIf="previewLink != ''">
+        <div class="col">
+          <a [href]="previewLink" class="btn btn-outline-primary"
+            >Download Word document</a
+          >
+        </div>
+      </div>
+    </div>
+    <div class="col">
       <div id="form-template-details">
         <form [formGroup]="formGroup" (ngSubmit)="submitForm()">
           <fieldset [disabled]="!editMode">
@@ -77,21 +92,6 @@
             Cancel
           </button>
         </form>
-      </div>
-    </div>
-    <div class="col-6">
-      Document Preview:
-      <div *ngIf="iframeSrc != ''" class="ratio ratio-1x1">
-        <iframe [src]="iframeSrc" allowfullscreen
-          >Preview PDF or plain text document</iframe
-        >
-      </div>
-      <div class="row" *ngIf="previewLink != ''">
-        <div class="col">
-          <a [href]="previewLink" class="btn btn-outline-primary"
-            >Download Word document</a
-          >
-        </div>
       </div>
     </div>
   </div>

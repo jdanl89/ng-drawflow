@@ -99,7 +99,7 @@ export class FormDetailsComponent implements OnInit {
 
   resetTemplate(): void {
     this.addTemplateMode = false;
-    this.formGroup.reset();
+    this.templateGroup.reset();
   }
 
   submitTemplate(): void {

@@ -20,7 +20,8 @@ export class FormTemplateDetailsComponent implements OnInit {
     name: ['', [Validators.required, Validators.maxLength(50)]],
     description: ['', [Validators.required, Validators.maxLength(200)]],
   });
-  preview: any;
+  iframeSrc: any = '';
+  previewLink: any = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -51,6 +52,44 @@ export class FormTemplateDetailsComponent implements OnInit {
   generatePreview(): void {
     // https://stackoverflow.com/a/55626497/7848128
     // https://stackblitz.com/edit/display-image-from-api?file=src%2Fapp%2Fapp.component.ts
+
+    this.http
+      .get(`/api/forms/templates/${this.formTemplateId}/file`, {
+        observe: 'response',
+        responseType: 'blob',
+      })
+      .subscribe({
+        next: (result) => {
+          let blob: Blob = result.body as Blob;
+          let formUrl = URL.createObjectURL(blob);
+
+          console.log(blob.type);
+          console.log(formUrl.toString().substring(5));
+
+          switch (blob.type) {
+            case 'text/trf': // rich text format
+            case 'text/richtext': // rich text format
+            case 'application/rtf': // rich text format
+            case 'application/msword': // .doc
+            case 'application/vnd.ms-word.document.macroEnabled.12': // .docm
+            case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': // .docx
+              // word documents will need to be downloaded.
+              this.previewLink = formUrl.toString();
+              break;
+            case 'text/html': // .html
+            case 'text/plain': // .txt
+            case 'application/pdf': // pdf
+            default:
+              // text and PDF documents can be previewed in the browser.
+              this.iframeSrc = this.sanitizer.bypassSecurityTrustResourceUrl(
+                formUrl.toString(),
+              );
+              break;
+          }
+        },
+        error: (error) => console.error(error),
+        complete: () => {},
+      });
   }
 
   resetForm(): void {

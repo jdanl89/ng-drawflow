@@ -1,10 +1,16 @@
 <div *ngIf="form != null">
   <div id="form-details" class="my-3">
+    <h1>Form Details</h1>
     <form [formGroup]="formGroup" (ngSubmit)="submitForm()">
       <fieldset [disabled]="!editMode">
         <div class="mb-3">
           <label for="name">Name</label>
-          <input type="text" class="form-control" formControlName="name" />
+          <input
+            type="text"
+            class="form-control"
+            formControlName="name"
+            id="name"
+          />
           <div
             class="text-danger"
             *ngIf="
@@ -25,6 +31,7 @@
             type="text"
             class="form-control"
             formControlName="description"
+            id="description"
           />
           <div
             class="text-danger"
@@ -75,6 +82,7 @@
   <hr />
 
   <div id="form-templates" class="my-3">
+    <h2 class="h3">Form Templates</h2>
     <table class="table" *ngIf="form.formTemplates.length">
       <thead>
         <tr>
@@ -204,6 +212,7 @@
   <hr />
 
   <div id="audit-info" class="my-3">
+    <h2 class="h3">Audit Details</h2>
     <div class="row my-3">
       <div class="col">
         <div class="form-label">Created At</div>

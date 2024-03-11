@@ -4,6 +4,7 @@ using Drawflow.Server.Data.Models;
 using Drawflow.Server.Models;
 using Drawflow.Server.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
 
 public class FormsController(IFormService formService) : ControllerBase
 {
@@ -55,6 +56,25 @@ public class FormsController(IFormService formService) : ControllerBase
     public async Task<FormTemplate> GetFormTemplate(long formTemplateId, CancellationToken token = default)
     {
         return await formService.GetFormTemplateByIdAsync(formTemplateId, token);
+    }
+
+    [HttpGet]
+    [Route("/api/forms/templates/{formTemplateId}/file")]
+    public async Task<IActionResult> GetFormTemplateFile(long formTemplateId, CancellationToken token = default)
+    {
+        FormTemplate _formTemplate = await formService.GetFormTemplateByIdAsync(formTemplateId, token);
+
+        string _filePath = Path.Combine(Directory.GetCurrentDirectory(), _formTemplate.FileLocation);
+        
+        FileExtensionContentTypeProvider _provider = new();
+        if (!_provider.TryGetContentType(_filePath, out string? _contentType))
+        {
+            _contentType = "application/octet-stream";
+        }
+
+        FileStream _fileStream = new(_filePath, FileMode.Open, FileAccess.Read);
+
+        return this.File(_fileStream, _contentType, Path.GetFileName(_filePath));
     }
 
     [HttpPut]

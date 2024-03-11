@@ -1,74 +1,98 @@
 <div *ngIf="formTemplate != null">
-  <div id="form-template-details" class="my-3">
-    <form [formGroup]="formGroup" (ngSubmit)="submitForm()">
-      <fieldset [disabled]="!editMode">
-        <div class="mb-3">
-          <label for="name">Name</label>
-          <input type="text" class="form-control" formControlName="name" />
-          <div
-            class="text-danger"
-            *ngIf="
-              formGroup?.get('name')?.invalid && formGroup?.get('name')?.touched
-            "
+  <div class="row my-3">
+    <div class="col-6">
+      <div id="form-template-details">
+        <form [formGroup]="formGroup" (ngSubmit)="submitForm()">
+          <fieldset [disabled]="!editMode">
+            <div class="mb-3">
+              <label for="name">Name</label>
+              <input type="text" class="form-control" formControlName="name" />
+              <div
+                class="text-danger"
+                *ngIf="
+                  formGroup?.get('name')?.invalid &&
+                  formGroup?.get('name')?.touched
+                "
+              >
+                <div *ngIf="formGroup?.get('name')?.errors?.['required']">
+                  Name is required
+                </div>
+                <div *ngIf="formGroup?.get('name')?.errors?.['maxlength']">
+                  Name cannot be longer than 50 characters
+                </div>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="description">Description</label>
+              <input
+                type="text"
+                class="form-control"
+                formControlName="description"
+              />
+              <div
+                class="text-danger"
+                *ngIf="
+                  formGroup?.get('description')?.invalid &&
+                  formGroup?.get('description')?.touched
+                "
+              >
+                <div
+                  *ngIf="formGroup?.get('description')?.errors?.['required']"
+                >
+                  Description is required
+                </div>
+                <div
+                  *ngIf="formGroup?.get('description')?.errors?.['maxlength']"
+                >
+                  Description cannot be longer than 200 characters
+                </div>
+              </div>
+            </div>
+          </fieldset>
+
+          <button
+            type="button"
+            class="btn btn-primary"
+            *ngIf="!editMode"
+            (click)="editMode = true"
           >
-            <div *ngIf="formGroup?.get('name')?.errors?.['required']">
-              Name is required
-            </div>
-            <div *ngIf="formGroup?.get('name')?.errors?.['maxlength']">
-              Name cannot be longer than 50 characters
-            </div>
-          </div>
-        </div>
-        <div class="mb-3">
-          <label for="description">Description</label>
-          <input
-            type="text"
-            class="form-control"
-            formControlName="description"
-          />
-          <div
-            class="text-danger"
-            *ngIf="
-              formGroup?.get('description')?.invalid &&
-              formGroup?.get('description')?.touched
-            "
+            Edit
+          </button>
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+            *ngIf="editMode"
+            [disabled]="!(formGroup.dirty && formGroup.valid)"
           >
-            <div *ngIf="formGroup?.get('description')?.errors?.['required']">
-              Description is required
-            </div>
-            <div *ngIf="formGroup?.get('description')?.errors?.['maxlength']">
-              Description cannot be longer than 200 characters
-            </div>
-          </div>
+            Submit
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-danger ms-4"
+            *ngIf="editMode"
+            (click)="resetForm()"
+          >
+            Cancel
+          </button>
+        </form>
+      </div>
+    </div>
+    <div class="col-6">
+      Document Preview:
+      <div *ngIf="iframeSrc != ''" class="ratio ratio-1x1">
+        <iframe [src]="iframeSrc" allowfullscreen
+          >Preview PDF or plain text document</iframe
+        >
+      </div>
+      <div class="row" *ngIf="previewLink != ''">
+        <div class="col">
+          <a [href]="previewLink" class="btn btn-outline-primary"
+            >Download Word document</a
+          >
         </div>
-      </fieldset>
-
-      <button
-        type="button"
-        class="btn btn-primary"
-        *ngIf="!editMode"
-        (click)="editMode = true"
-      >
-        Edit
-      </button>
-
-      <button
-        type="submit"
-        class="btn btn-primary"
-        *ngIf="editMode"
-        [disabled]="!(formGroup.dirty && formGroup.valid)"
-      >
-        Submit
-      </button>
-
-      <button
-        type="button"
-        class="btn btn-danger ms-4"
-        *ngIf="editMode"
-        (click)="resetForm()"
-      >
-        Cancel
-      </button>
-    </form>
+      </div>
+    </div>
   </div>
 </div>

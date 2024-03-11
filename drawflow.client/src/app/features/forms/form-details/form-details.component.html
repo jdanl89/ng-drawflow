@@ -98,9 +98,7 @@
             <span *ngIf="formTemplate.status == 2">Deleted</span>
           </td>
           <td>
-            <a [routerLink]="['/forms/templates', formTemplate.id]"
-              >More Details</a
-            >
+            <a [routerLink]="['templates', formTemplate.id]">More Details</a>
           </td>
         </tr>
       </tbody>

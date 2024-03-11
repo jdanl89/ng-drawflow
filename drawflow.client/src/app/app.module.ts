@@ -13,6 +13,7 @@ import { FormCreateComponent } from './features/forms/form-create/form-create.co
 import { FormDetailsComponent } from './features/forms/form-details/form-details.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
+import { FormTemplateDetailsComponent } from './features/forms/form-template-details/form-template-details.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,7 @@ import { DatePipe } from '@angular/common';
     FormDashboardComponent,
     FormCreateComponent,
     FormDetailsComponent,
+    FormTemplateDetailsComponent,
   ],
   imports: [
     BrowserModule,

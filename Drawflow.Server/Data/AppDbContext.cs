@@ -86,7 +86,7 @@ public class AppDbContext : DbContext
                     {
                         Name = "TestForm",
                         Description = "This is only a test.",
-                        FileLocation = "",
+                        FileLocation = "Uploads\\foo.txt",
                         CreatedAt = "SeedData",
                         CreatedBy = "SeedData",
                         CreatedOn = DateTime.UtcNow,

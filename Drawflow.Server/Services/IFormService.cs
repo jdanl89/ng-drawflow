@@ -6,11 +6,21 @@ using Drawflow.Server.Models;
 
 public interface IFormService
 {
-    Task<Form> AddFormAsync(FormCreateModel model, [CallerMemberName] string createdAt = "");
-    Task<Form> AddFormTemplateAsync(long formId, FormTemplateCreateModel model, [CallerMemberName] string createdAt = "");
-    Task<List<Form>> GetFormsAsync(CancellationToken token = default);
+    Task<Form> AddFormAsync(FormCreateModel model, [CallerMemberName] string createdAt = "AddFormAsync");
+
+    Task<Form> AddFormTemplateAsync(long formId, FormTemplateCreateModel model, [CallerMemberName] string createdAt = "AddFormTemplateAsync");
+
+    Task DeleteFormAsync(long formId, [CallerMemberName] string deletedAt = "DeleteFormAsync");
+
+    Task DeleteFormTemplateAsync(long formTemplateId, [CallerMemberName] string deletedAt = "DeleteFormTemplateAsync");
+
     Task<Form?> GetFormByIdAsync(long formId, CancellationToken token = default);
-    Task<Form> UpdateFormAsync(long formId, FormUpdateModel model, [CallerMemberName] string modifiedAt = "");
-    Task DeleteFormAsync(long formId, [CallerMemberName] string deletedAt = "");
-    Task DeleteFormTemplateAsync(long formTemplateId, [CallerMemberName] string deletedAt = "");
+
+    Task<List<Form>> GetFormsAsync(CancellationToken token = default);
+
+    Task<FormTemplate> GetFormTemplateByIdAsync(long formTemplateId, CancellationToken token);
+
+    Task<Form> UpdateFormAsync(long formId, FormUpdateModel model, [CallerMemberName] string modifiedAt = "UpdateFormAsync");
+
+    Task<FormTemplate> UpdateFormTemplateAsync(long formTemplateId, FormTemplateUpdateModel model, [CallerMemberName] string modifiedAt = "UpdateFormTemplateAsync");
 }

@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 public class FormService(AppDbContext dbContext, IFileService fileService) : IFormService
 {
-    public async Task<Form> AddFormAsync(FormCreateModel model, [CallerMemberName] string createdAt = "")
+    public async Task<Form> AddFormAsync(FormCreateModel model, [CallerMemberName] string createdAt = "AddFormAsync")
     {
         Form _form = Form.Create(model);
         EntityEntry<Form> _entry = dbContext.Forms.Add(_form);
@@ -17,7 +17,7 @@ public class FormService(AppDbContext dbContext, IFileService fileService) : IFo
         return _entry.Entity;
     }
 
-    public async Task<Form> AddFormTemplateAsync(long formId, FormTemplateCreateModel model, [CallerMemberName] string createdAt = "")
+    public async Task<Form> AddFormTemplateAsync(long formId, FormTemplateCreateModel model, [CallerMemberName] string createdAt = "AddFormTemplateAsync")
     {
         string _fileName = model.Name + Path.GetExtension(model.TemplateFile.FileName);
         string _fileLocation = await fileService.SaveFileAsync(_fileName, model.TemplateFile);
@@ -32,11 +32,27 @@ public class FormService(AppDbContext dbContext, IFileService fileService) : IFo
         return _form;
     }
 
-    public Task<List<Form>> GetFormsAsync(CancellationToken token = default) => dbContext.Forms.OrderBy(f => f.Id).ToListAsync(token);
+    public async Task DeleteFormAsync(long formId, [CallerMemberName] string deletedAt = "DeleteFormAsync")
+    {
+        Form _form = await dbContext.Forms.FirstOrDefaultAsync(f => f.Id == formId) ?? throw new ArgumentException("formId is invalid", nameof(formId));
+        dbContext.Forms.Remove(_form);
+        await dbContext.SaveChangesAsync();
+    }
+
+    public async Task DeleteFormTemplateAsync(long formTemplateId, [CallerMemberName] string deletedAt = "DeleteFormTemplateAsync")
+    {
+        FormTemplate _formTemplate = await dbContext.FormTemplates.FirstOrDefaultAsync(f => f.Id == formTemplateId) ?? throw new ArgumentException("formTemplateId is invalid", nameof(formTemplateId));
+        dbContext.FormTemplates.Remove(_formTemplate);
+        await dbContext.SaveChangesAsync();
+    }
 
     public Task<Form?> GetFormByIdAsync(long formId, CancellationToken token = default) => dbContext.Forms.Include(f => f.FormTemplates).OrderBy(ft => ft.Id).FirstOrDefaultAsync(f => f.Id == formId, token);
 
-    public async Task<Form> UpdateFormAsync(long formId, FormUpdateModel model, [CallerMemberName] string modifiedAt = "")
+    public Task<List<Form>> GetFormsAsync(CancellationToken token = default) => dbContext.Forms.OrderBy(f => f.Id).ToListAsync(token);
+
+    public Task<FormTemplate> GetFormTemplateByIdAsync(long formTemplateId, CancellationToken token) => dbContext.FormTemplates.FirstAsync(t => t.Id == formTemplateId, token);
+
+    public async Task<Form> UpdateFormAsync(long formId, FormUpdateModel model, [CallerMemberName] string modifiedAt = "UpdateFormAsync")
     {
         Form _form = await dbContext.Forms.FirstOrDefaultAsync(f => f.Id == formId) ?? throw new ArgumentException("formId is invalid", nameof(formId));
         _form.Name = model.Name;
@@ -45,17 +61,12 @@ public class FormService(AppDbContext dbContext, IFileService fileService) : IFo
         return _form;
     }
 
-    public async Task DeleteFormAsync(long formId, [CallerMemberName] string deletedAt = "")
+    public async Task<FormTemplate> UpdateFormTemplateAsync(long formTemplateId, FormTemplateUpdateModel model, [CallerMemberName] string modifiedAt = "UpdateFormTemplateAsync")
     {
-        Form _form = await dbContext.Forms.FirstOrDefaultAsync(f => f.Id == formId) ?? throw new ArgumentException("formId is invalid", nameof(formId));
-        dbContext.Forms.Remove(_form);
+        FormTemplate _template = await dbContext.FormTemplates.FirstAsync(t => t.Id == formTemplateId);
+        _template.Name = model.Name;
+        _template.Description = model.Description;
         await dbContext.SaveChangesAsync();
-    }
-
-    public async Task DeleteFormTemplateAsync(long formTemplateId, [CallerMemberName] string deletedAt = "")
-    {
-        FormTemplate _formTemplate = await dbContext.FormTemplates.FirstOrDefaultAsync(f => f.Id == formTemplateId) ?? throw new ArgumentException("formTemplateId is invalid", nameof(formTemplateId));
-        dbContext.FormTemplates.Remove(_formTemplate);
-        await dbContext.SaveChangesAsync();
+        return _template;
     }
 }

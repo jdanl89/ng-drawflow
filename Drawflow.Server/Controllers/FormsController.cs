@@ -50,10 +50,24 @@ public class FormsController(IFormService formService) : ControllerBase
         return await formService.GetFormsAsync(token);
     }
 
+    [HttpGet]
+    [Route("/api/forms/templates/{formTemplateId}")]
+    public async Task<FormTemplate> GetFormTemplate(long formTemplateId, CancellationToken token = default)
+    {
+        return await formService.GetFormTemplateByIdAsync(formTemplateId, token);
+    }
+
     [HttpPut]
     [Route("/api/forms/{formId}")]
     public async Task<Form> UpdateForm(long formId, [FromBody] FormUpdateModel form)
     {
         return await formService.UpdateFormAsync(formId, form);
+    }
+
+    [HttpPut]
+    [Route("/api/forms/templates/{formTemplateId}")]
+    public async Task<FormTemplate> UpdateFormTemplate(long formTemplateId, [FromBody] FormTemplateUpdateModel model)
+    {
+        return await formService.UpdateFormTemplateAsync(formTemplateId, model);
     }
 }

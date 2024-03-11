@@ -84,14 +84,44 @@ public class AppDbContext : DbContext
                 FormTemplates = [
                     new()
                     {
-                        Name = "TestForm",
-                        Description = "This is only a test.",
-                        FileLocation = "Uploads\\foo.txt",
+                        Name = "HTML",
+                        Description = "This is an HTML document.",
+                        FileLocation = "Uploads\\Html.html",
                         CreatedAt = "SeedData",
                         CreatedBy = "SeedData",
                         CreatedOn = DateTime.UtcNow,
                         Status = EntityStatus.Active,
-                    }
+                    },
+                    new()
+                    {
+                        Name = "Text",
+                        Description = "This is a plain text document.",
+                        FileLocation = "Uploads\\Text.txt",
+                        CreatedAt = "SeedData",
+                        CreatedBy = "SeedData",
+                        CreatedOn = DateTime.UtcNow,
+                        Status = EntityStatus.Active,
+                    },
+                    new()
+                    {
+                        Name = "PDF",
+                        Description = "This is a PDF document.",
+                        FileLocation = "Uploads\\PDF.pdf",
+                        CreatedAt = "SeedData",
+                        CreatedBy = "SeedData",
+                        CreatedOn = DateTime.UtcNow,
+                        Status = EntityStatus.Active,
+                    },
+                    new()
+                    {
+                        Name = "Word",
+                        Description = "This is a Word document.",
+                        FileLocation = "Uploads\\Word.docx",
+                        CreatedAt = "SeedData",
+                        CreatedBy = "SeedData",
+                        CreatedOn = DateTime.UtcNow,
+                        Status = EntityStatus.Active,
+                    },
                 ]
             });
 

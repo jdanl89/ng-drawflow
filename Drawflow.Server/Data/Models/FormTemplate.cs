@@ -29,6 +29,8 @@ public class FormTemplate : Auditable
     public long FormId { get; set; }
     public virtual Form Form { get; set; }
 
+    public virtual ICollection<FormTemplateInput> Inputs { get; set; }
+
     public static FormTemplate Create(FormTemplateCreateModel model, string fileLocation, long formId, [CallerMemberName] string createdAt = "") => new()
     {
         Name = model.Name,

@@ -66,6 +66,9 @@ public class AppDbContext : DbContext
 
     public DbSet<Form> Forms { get; set; }
     public DbSet<FormTemplate> FormTemplates { get; set; }
+    public DbSet<FormTemplateVariable> FormTemplateVariables { get; set; }
+    public DbSet<FormTemplateVariableOption> FormTemplateVariableOptions { get; set; }
+    public DbSet<FormTemplateVariableValidation> FormTemplateVariableValidations { get; set; }
 
     public void SeedData()
     {

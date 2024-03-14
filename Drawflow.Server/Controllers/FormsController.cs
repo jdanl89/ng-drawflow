@@ -4,7 +4,6 @@ using Drawflow.Server.Data.Models;
 using Drawflow.Server.Models;
 using Drawflow.Server.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.StaticFiles;
 
 public class FormsController(IFormService formService) : ControllerBase
 {
@@ -60,21 +59,20 @@ public class FormsController(IFormService formService) : ControllerBase
 
     [HttpGet]
     [Route("/api/forms/templates/{formTemplateId}/file")]
-    public async Task<IActionResult> GetFormTemplateFile(long formTemplateId, CancellationToken token = default)
+    public async Task<FileStreamResult> GetFormTemplateFile(long formTemplateId, CancellationToken token = default)
     {
-        FormTemplate _formTemplate = await formService.GetFormTemplateByIdAsync(formTemplateId, token);
+        (FileStream _fileStream, string _filePath, string _contentType) = await formService.GetFormTemplateFileByFormTemplateIdAsync(formTemplateId, token);
 
-        string _filePath = Path.Combine(Directory.GetCurrentDirectory(), _formTemplate.FileLocation);
-        
-        FileExtensionContentTypeProvider _provider = new();
-        if (!_provider.TryGetContentType(_filePath, out string? _contentType))
-        {
-            _contentType = "application/octet-stream";
-        }
+        return this.File(_fileStream, _contentType, _filePath);
+    }
 
-        FileStream _fileStream = new(_filePath, FileMode.Open, FileAccess.Read);
+    [HttpGet]
+    [Route("/api/forms/templates/{formTemplateId}/variables")]
+    public async Task<FormTemplateVariablesResponseModel> FindFormTemplateVariables(long formTemplateId, CancellationToken token = default)
+    {
+        (IEnumerable<string> _foundVariables, IEnumerable<FormTemplateVariable> _knownVariables) = await formService.FindFormTemplateVariablesAsync(formTemplateId, token);
 
-        return this.File(_fileStream, _contentType, Path.GetFileName(_filePath));
+        return new(_foundVariables, _knownVariables);
     }
 
     [HttpPut]

@@ -1,25 +1,25 @@
 ﻿namespace Drawflow.Server.Data.Models;
 
-using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
-public class FormTemplateInputValidation : Auditable
+public class FormTemplateVariableValidation : Auditable
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public long Id { get; set; }
 
     [Required]
-    [ForeignKey("FormTemplateInput")]
-    public long FormTemplateInputId { get; set; }
-    public virtual FormTemplateInput FormTemplateInput { get; set; }
+    [ForeignKey("FormTemplateVariable")]
+    public long FormTemplateVariableId { get; set; }
+    public virtual FormTemplateVariable FormTemplateVariable { get; set; }
 
     [Required]
     public InputValidationType ValidationType { get; set; }
 
-    public string ValidationLimit { get; set; }
+    public string? ValidationLimit { get; set; }
 
     public InputValidationType? PrereqValidationType { get; set; }
 
@@ -27,5 +27,5 @@ public class FormTemplateInputValidation : Auditable
 
     [ForeignKey("PrereqValidation")]
     public long? PrereqValidationId { get; set; }
-    public FormTemplateInputValidation? PrereqValidation { get; set; }
+    public FormTemplateVariableValidation? PrereqValidation { get; set; }
 }

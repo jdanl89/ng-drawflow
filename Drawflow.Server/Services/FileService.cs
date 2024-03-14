@@ -1,7 +1,12 @@
 ﻿namespace Drawflow.Server.Services;
-
 public class FileService : IFileService
 {
+    public FileStream GetFile(string savedPath)
+    {
+        string _filePath = Path.Combine(Directory.GetCurrentDirectory(), savedPath);
+        return new(_filePath, FileMode.Open, FileAccess.Read);
+    }
+
     public async Task<string> SaveFileAsync(string fileName, IFormFile formFile)
     {
         string _folderName = Path.Combine("Uploads");

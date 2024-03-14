@@ -44,10 +44,21 @@ export class FormTemplateDetailsComponent implements OnInit {
       error: (error) => console.error(error),
       complete: () => {},
     });
+
+    this.getFormTemplateVariables().subscribe({
+      next: (result) => {
+        console.log(result);
+      },
+      error: (error) => console.error(error),
+      complete: () => {},
+    });
   }
 
   getFormTemplate = (): Observable<FormTemplate> =>
     this.http.get<FormTemplate>(`/api/forms/templates/${this.formTemplateId}`);
+
+  getFormTemplateVariables = (): Observable<any> =>
+    this.http.get<any>(`/api/forms/templates/${this.formTemplateId}/variables`);
 
   generatePreview(): void {
     // https://stackoverflow.com/a/55626497/7848128

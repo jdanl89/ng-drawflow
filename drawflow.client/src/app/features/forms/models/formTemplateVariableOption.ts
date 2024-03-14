@@ -1,8 +1,8 @@
 import { Auditable } from '../../../shared/models/auditable';
 import { FormTemplate } from './formTemplate';
 
-export interface FormTemplateInputOption extends Auditable {
+export interface FormTemplateVariableOption extends Auditable {
   id: number;
   value: string;
-  formTemplateInputId: number;
+  formTemplateVariableId: number;
 }

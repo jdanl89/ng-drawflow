@@ -1,4 +1,7 @@
 export enum InputValidationType {
+  // required
+  Required,
+
   // equals
   Eq,
 

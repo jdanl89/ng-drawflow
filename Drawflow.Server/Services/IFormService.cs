@@ -18,7 +18,11 @@ public interface IFormService
 
     Task<List<Form>> GetFormsAsync(CancellationToken token = default);
 
-    Task<FormTemplate> GetFormTemplateByIdAsync(long formTemplateId, CancellationToken token);
+    Task<FormTemplate> GetFormTemplateByIdAsync(long formTemplateId, CancellationToken token = default);
+
+    Task<(FileStream, string, string)> GetFormTemplateFileByFormTemplateIdAsync(long formTemplateId, CancellationToken token = default);
+
+    Task<(IEnumerable<string> _foundVariables, IEnumerable<FormTemplateVariable> _knownVariables)> FindFormTemplateVariablesAsync(long formTemplateId, CancellationToken token = default);
 
     Task<Form> UpdateFormAsync(long formId, FormUpdateModel model, [CallerMemberName] string modifiedAt = "UpdateFormAsync");
 

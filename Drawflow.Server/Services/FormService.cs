@@ -1,9 +1,11 @@
 ﻿namespace Drawflow.Server.Services;
 
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using Drawflow.Server.Data;
 using Drawflow.Server.Data.Models;
 using Drawflow.Server.Models;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
@@ -50,7 +52,60 @@ public class FormService(AppDbContext dbContext, IFileService fileService) : IFo
 
     public Task<List<Form>> GetFormsAsync(CancellationToken token = default) => dbContext.Forms.OrderBy(f => f.Id).ToListAsync(token);
 
-    public Task<FormTemplate> GetFormTemplateByIdAsync(long formTemplateId, CancellationToken token) => dbContext.FormTemplates.FirstAsync(t => t.Id == formTemplateId, token);
+    public Task<FormTemplate> GetFormTemplateByIdAsync(long formTemplateId, CancellationToken token = default) => dbContext.FormTemplates.FirstAsync(t => t.Id == formTemplateId, token);
+    public async Task<(FileStream, string, string)> GetFormTemplateFileByFormTemplateIdAsync(long formTemplateId, CancellationToken token = default)
+    {
+        FormTemplate _formTemplate = await this.GetFormTemplateByIdAsync(formTemplateId, token);
+        FileStream _fileStream = fileService.GetFile(_formTemplate.FileLocation);
+
+        FileExtensionContentTypeProvider _provider = new();
+        if (!_provider.TryGetContentType(_formTemplate.FileLocation, out string? _contentType))
+        {
+            _contentType = "application/octet-stream";
+        }
+
+        return (_fileStream, Path.GetFileName(_formTemplate.FileLocation), _contentType);
+    }
+
+    public async Task<(IEnumerable<string> _foundVariables, IEnumerable<FormTemplateVariable> _knownVariables)> FindFormTemplateVariablesAsync(long formTemplateId, CancellationToken token = default)
+    {
+        FormTemplate _formTemplate = await dbContext.FormTemplates
+            .Include(ft => ft.Variables)
+            .ThenInclude(ftv => ftv.Options)
+            .Include(ft => ft.Variables)
+            .ThenInclude(ftv => ftv.Validations)
+            .SingleAsync(ft => ft.Id == formTemplateId, token);
+
+        (FileStream _stream, string _, string _contentType) = await this.GetFormTemplateFileByFormTemplateIdAsync(formTemplateId, token);
+
+        IEnumerable<string> _foundVariables = [];
+
+        switch (_contentType)
+        {
+            case "text/html":
+            case "text/plain":
+                string _fileContent;
+                using (StreamReader _sr = new(_stream))
+                {
+                    _fileContent = await _sr.ReadToEndAsync(token);
+                }
+
+                MatchCollection _matches = Regex.Matches(_fileContent, @"\{\{[a-zA-Z0-9_\-]+\}\}");
+                _foundVariables = _matches.Select(m => m.Value.TrimStart('{').TrimEnd('}'));
+                break;
+            case "text/trf":
+            case "text/richtext":
+            case "application/rtf":
+            case "application/msword":
+            case "application/vnd.ms-word.document.macroEnabled.12":
+            case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+            case "application/pdf":
+            default:
+                break;
+        }
+
+        return (_foundVariables, _formTemplate.Variables);
+    }
 
     public async Task<Form> UpdateFormAsync(long formId, FormUpdateModel model, [CallerMemberName] string modifiedAt = "UpdateFormAsync")
     {

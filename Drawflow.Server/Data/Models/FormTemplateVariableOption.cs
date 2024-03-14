@@ -1,11 +1,11 @@
 ﻿namespace Drawflow.Server.Data.Models;
 
-using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
-public class FormTemplateInputOption : Auditable
+public class FormTemplateVariableOption : Auditable
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -15,7 +15,7 @@ public class FormTemplateInputOption : Auditable
     public string Value { get; set; }
 
     [Required]
-    [ForeignKey("FormTemplateInput")]
-    public long FormTemplateInputId { get; set; }
-    public virtual FormTemplateInput FormTemplateInput { get; set; }
+    [ForeignKey("FormTemplateVariable")]
+    public long FormTemplateVariableId { get; set; }
+    public virtual FormTemplateVariable FormTemplateVariable { get; set; }
 }

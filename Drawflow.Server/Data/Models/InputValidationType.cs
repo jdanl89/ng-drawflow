@@ -2,6 +2,9 @@
 
 public enum InputValidationType
 {
+    // required
+    Required,
+
     // equals
     Eq,
 
